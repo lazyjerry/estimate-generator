@@ -1,4 +1,3 @@
-```markdown
 # 報價單產生器
 
 這個專案是一個基於 Cloudflare Workers 的報價單產生器。使用者可以透過網頁表單輸入報價資料，系統會自動產生格式化的報價單頁面，並支援列印成 A4 PDF。報價單頁面還包含「下載 PDF」按鈕，方便用戶下載報價單 PDF。
@@ -7,6 +6,10 @@
 
 請點擊以下網址查看線上 Demo：  
 [https://estimate-generator.crazyjerry.workers.dev/](https://estimate-generator.crazyjerry.workers.dev/)
+
+⚠ **請注意：**
+- **Demo 網址可能會因版本變更而有所不同，未必是當前版本，請依實際情況調整。**
+- **可在 Chrome 開發人員工具（F12 或 Ctrl + Shift + I）中執行 `autofillForm()` 來測試自動填入功能。**
 
 ## 功能特色
 
@@ -61,35 +64,3 @@
    如果尚未安裝，請執行：
    ```bash
    npm install -g @cloudflare/wrangler
-   ```
-
-2. **建立 wrangler.toml**  
-   在專案根目錄建立 `wrangler.toml`，例如：
-   ```toml
-   name = "estimate-generator"
-   type = "javascript"
-   account_id = "<你的帳號 ID>"
-   workers_dev = true
-   compatibility_date = "2025-03-08"
-   ```
-
-3. **部署**  
-   執行以下命令將 Worker 部署到 Cloudflare：
-   ```bash
-   wrangler publish
-   ```
-
-部署成功後，您的 Worker 將可在 `https://xxxx.oooo.workers.dev/`（或您設定的自訂域名）訪問。
-
-## 自定義
-
-- **介面樣式**  
-  您可以編輯 `form.html` 與 `quote.html` 中的 CSS，調整排版、色調與字體以符合您的品牌需求。
-
-- **功能擴展**  
-  如需增加進階的防機器人功能、分享功能或其他自定義邏輯，請修改 `index.js` 中相應的程式碼。
-
-## 授權
-
-本專案採用 MIT 授權，歡迎參考與修改。
-```
