@@ -32,15 +32,15 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="logoUrl" class="form-label">Logo URL</label>
-              <input type="text" class="form-control" id="logoUrl" name="logoUrl" placeholder="例如：https://example.com/logo.png">
+              <input type="text" class="form-control" id="logoUrl" name="logoUrl" placeholder="例如：https://example.com/logo.png" value="">
             </div>
             <div class="mb-3">
-              <label for="providerName" class="form-label">乙方 (提供單位)</label>
+              <label for="providerName" class="form-label">乙方 (報價單位)</label>
               <input type="text" class="form-control" id="providerName" name="providerName" placeholder="例如：乙方示例公司" required>
             </div>
             <div class="mb-3">
               <label for="providerContact" class="form-label">乙方聯絡資訊</label>
-              <textarea class="form-control" id="providerContact" name="providerContact" rows="3" placeholder="例如：地址：台中市西區示例路 10 號&#10;電話：04-1234567" required></textarea>
+              <textarea class="form-control" id="providerContact" name="providerContact" rows="3" placeholder="請輸入資訊，例如：&#10;地址：台中市西區示例路 10 號&#10;電話：04-1234567" required></textarea>
             </div>
             <div class="mb-3">
               <label for="customerName" class="form-label">甲方 (客戶)</label>
@@ -48,7 +48,7 @@
             </div>
             <div class="mb-3">
               <label for="customerContact" class="form-label">甲方聯絡資訊</label>
-              <textarea class="form-control" id="customerContact" name="customerContact" rows="3" placeholder="例如：地址：高雄市前鎮區示例路 20 號&#10;電話：07-7654321" required></textarea>
+              <textarea class="form-control" id="customerContact" name="customerContact" rows="3" placeholder="請輸入資訊，例如：&#10;地址：高雄市前鎮區示例路 20 號&#10;電話：07-7654321" required></textarea>
             </div>
             <div class="mb-3">
               <label for="quoteNumber" class="form-label">報價單編號</label>
@@ -63,12 +63,13 @@
               <input type="date" class="form-control" id="deadlineInput" name="deadline" required>
             </div>
             <div class="mb-3">
-              <label for="taxPercent" class="form-label">稅金百分比 (%)</label>
-              <input type="number" class="form-control" id="taxPercent" name="taxPercent" step="1" min="0" value="0" required>
-            </div>
-            <div class="mb-3">
               <label for="remarks" class="form-label">備註</label>
-              <textarea class="form-control" id="remarks" name="remarks" rows="6" placeholder="例如：此報價僅供參考，請儘快回覆"></textarea>
+              <textarea class="form-control" id="remarks" name="remarks" rows="12" placeholder="例如：此報價僅供參考，請儘快回覆">1.該份報價附屬於事先簽署的合作合約之中，若無則僅供確認記錄留存，請勿蓋章、回簽。
+2.價格不含稅與支付平台手續費用。發票稅為總價 5%，其餘手續費用另記。
+3.頭款與其他款項需另行確認，並於頭款支付完成後開始執行。
+4.尾款支付期為於結案後 7 天內，或於執行前另外約定，遲延給付一日 0.1% 違約金。
+5.我方得以於不涉及甲方營業秘密原則下，保留該作品作為作品集展示之權利。
+6.如規格有異動，需調整報價請另行提出。</textarea>
             </div>
           </div>
           <!-- 右側：品項明細與金額 -->
@@ -98,6 +99,10 @@
               </tbody>
             </table>
             <button type="button" id="addItemButton" class="btn btn-primary">＋ 新增品項</button>
+            <div class="mb-3 mt-3">
+              <label for="taxPercent" class="form-label">稅金百分比 (%)</label>
+              <input type="number" class="form-control" id="taxPercent" name="taxPercent" step="1" min="0" value="0" required>
+            </div>
             <!-- Totals 以兩行表格呈現 -->
             <table class="table table-bordered text-center mt-3">
               <tr>
@@ -122,9 +127,10 @@
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // 設定日期預設值：今天及今天後 14 天
+    // 設定日期預設值：後天及後 14 天
     function setDefaultDates() {
       const today = new Date();
+      today.setDate(today.getDate() + 2);
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
@@ -222,7 +228,7 @@
 5.我方得以於不涉及甲方營業秘密原則下，保留該作品作為作品集展示之權利。
 6.如規格有異動，需調整報價請另行提出。`,
         items: [
-          { desc: "雲端伺服器架設", qty: 1, price: 0 },
+          { desc: "雲端伺服器架設[優惠]", qty: 1, price: 0 },
           { desc: "購買網域/DNS一年份、代管", qty: 1, price: 1000 },
           { desc: "管理端功能實作", qty: 1, price: 100000 },
           { desc: "客戶端實作", qty: 1, price: 150000 }
