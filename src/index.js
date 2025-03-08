@@ -2,20 +2,55 @@
 import formHtml from './form.html';
 import quoteTemplate from './quote.html';
 
+
+const hotComputerRoasts = [
+	"你這台電腦是打算兼職烤箱嗎？看樣子手撐一下就能烤麵包了！",
+	"這麼燙還不關機，你是想親自試驗「電腦煮泡麵」的新奇做法嗎？",
+	"CPU 散熱器都快變火山口了，你要不要乾脆從裡面煉點金出來？",
+	"別再開遊戲了，再開下去恐怕要先預約一台消防車來待命了！",
+	"你這電腦溫度比夏天的熱浪還強，是打算拿它來當暖爐過冬嗎？"
+];
+
 export default {
 	async fetch(request, env, ctx) {
 
-		// 檢查是否為機器人自動呼叫
-		const botCheckResponse = await checkForBots(request);
-		if (botCheckResponse) {
-			return botCheckResponse;
+		// 檢查是否為機器人或超過請求頻率
+		const botCheck = await checkForBots(request);
+		if (botCheck.status !== 200) {
+			// 如果狀態不是 200，直接返回對應錯誤
+			return new Response(botCheck.message, { status: botCheck.status });
 		}
 
 		if (request.method === "GET") {
-			return new Response(formHtml, {
+			// 產生回應
+			const response = new Response(formHtml, {
 				headers: { "Content-Type": "text/html; charset=utf-8" }
 			});
+			// 若有 newCookie，添增到回應中
+			if (botCheck.newCookie) {
+				response.headers.append("Set-Cookie", botCheck.newCookie);
+			}
+			return response;
+
 		} else if (request.method === "POST") {
+
+			// 先檢查上一頁 Referer（或檢查 Cookie）
+			const refererHeader = request.headers.get("Referer") || "";
+			const cookies = getCookies(request);
+			const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
+			const lastRequestData = cookies[clientIP] ? cookies[clientIP].split("|") : null;
+
+			if (!refererHeader || !lastRequestData) {
+
+				// 不符合條件
+				const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
+				const str = hotComputerRoasts[randomIndex];
+				return new Response(str, {
+					status: 400,
+				});
+			}
+
+
 			const formData = await request.formData();
 			const logoUrl = formData.get("logoUrl") || "";
 			const providerName = formData.get("providerName") || "";
@@ -43,7 +78,7 @@ export default {
 				subtotal += lineTotal;
 				itemsHtml += `<tr>
             <td>${desc}</td>
-						<td>${formatNumber(price)}</td>
+            <td>${formatNumber(price)}</td>
             <td>${formatNumber(qty)}</td>
             <td>${formatNumber(lineTotal)}</td>
           </tr>`;
@@ -85,9 +120,16 @@ export default {
 			// 使用模板字串替換，產生最終 HTML
 			const outputHtml = templateReplace(quoteTemplate, data);
 
-			return new Response(outputHtml, {
+			// 回應
+			const response = new Response(outputHtml, {
 				headers: { "Content-Type": "text/html; charset=utf-8" }
 			});
+			// 若有 newCookie，添增到回應中
+			if (botCheck.newCookie) {
+				response.headers.append("Set-Cookie", botCheck.newCookie);
+			}
+			return response;
+
 		} else {
 			return new Response("Method Not Allowed", { status: 405 });
 		}
@@ -124,12 +166,73 @@ function arrayBufferToBase64(buffer) {
 	return btoa(binary);
 }
 
-// 簡單的反機器人檢查：檢查 User-Agent 中是否包含常見的自動化關鍵字
+// **反機器人與 IP 限制請求檢查**
 async function checkForBots(request) {
 	const userAgent = request.headers.get("User-Agent") || "";
-	// 如果 User-Agent 為空，或包含 "bot", "crawler", "spider", "curl", "wget", "python", "java" 等字串則拒絕請求
+	const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
+	const maxRequests = 10; // 每分鐘最大請求數
+	const timeWindow = 60 * 1000; // 60 秒
+
+	// 若檢測到機器人，返回 dict
 	if (!userAgent || /bot|crawler|spider|curl|wget|python|java/i.test(userAgent)) {
-		return new Response("Forbidden", { status: 403 });
+		return {
+			status: 403,
+			message: "Forbidden: Automated requests are not allowed",
+			newCookie: ""
+		};
 	}
-	return null;
+
+	const cookies = getCookies(request);
+	const lastRequestData = cookies[clientIP] ? cookies[clientIP].split("|") : null;
+	let requestCount = 0;
+	let firstRequestTime = Date.now();
+
+	if (lastRequestData) {
+
+		requestCount = parseInt(lastRequestData[0], 10);
+		firstRequestTime = parseInt(lastRequestData[1], 10);
+
+		if (Date.now() - firstRequestTime < timeWindow) {
+			if (requestCount >= maxRequests) {
+
+				const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
+				const str = hotComputerRoasts[randomIndex];
+
+				return {
+					status: 429,
+					message: str,
+					newCookie: ""
+				};
+			}
+			requestCount++;
+		} else {
+			// 超過 60 秒重置計數
+			requestCount = 1;
+			firstRequestTime = Date.now();
+		}
+	} else {
+		requestCount = 1;
+		firstRequestTime = Date.now();
+	}
+	// 設置新的 Cookie（更新請求次數和時間戳）
+	const newCookie = `${clientIP}=${requestCount}|${firstRequestTime}; Max-Age=60; Path=/; HttpOnly; Secure`;
+
+	return {
+		status: 200,
+		message: "OK",
+		newCookie
+	};
+}
+
+// **輔助函數：解析 Cookie**
+function getCookies(request) {
+	const cookieHeader = request.headers.get("Cookie");
+	if (!cookieHeader) return {};
+
+	return Object.fromEntries(
+		cookieHeader.split(";").map(cookie => {
+			const [key, value] = cookie.trim().split("=");
+			return [key, value];
+		})
+	);
 }
