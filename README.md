@@ -31,56 +31,53 @@
 - **基礎防機器人保護**  
   透過檢查 HTTP User-Agent 標頭，對自動化呼叫進行基本過濾。
 
-## 專案結構
+## 部署方式
 
-- **index.js**  
-  Cloudflare Worker 主程式，負責處理 HTTP 請求、讀取表單資料、計算報價金額、將 logo 轉換成 Base64、套用模板生成報價單 HTML，以及基本的防機器人檢查。
+您可以使用 **Cloudflare Wrangler** 工具將此專案部署到 Cloudflare Workers。
 
-- **form.html**  
-  報價單輸入表單頁面的 HTML 模板，使用 Bootstrap 和 jQuery 打造響應式介面。
+### 1. 下載專案
 
-- **quote.html**  
-  報價單頁面的 HTML 模板，包含報價單格式、樣式與「下載 PDF」功能，適用於 A4 列印。
+```bash
+git pull https://github.com/your-repo/estimate-generator.git
+cd estimate-generator
+```
 
-## 運作原理
+### 2. 修改 `package.json` 版本號
 
-1. **使用者輸入資料**  
-   使用者在表單中輸入報價資料，包含乙方、甲方、品項、日期等資訊，並提交表單。
+打開 `package.json`，找到 `"version"` 欄位，根據需求進行版本號更新，例如：
 
-2. **資料處理與模板套用**  
-   Worker 後端接收 POST 請求，計算各項數據（小計、稅金、總計），並將數字格式化成帶逗號的整數格式；同時從外部取得 logo 圖片並轉換成 Base64。接著，利用模板替換將資料填入報價單模板 (quote.html)。
+```json
+{
+  "name": "estimate-generator",
+  "version": "1.0.1",
+  ...
+}
+```
 
-3. **生成與下載 PDF**  
-   產生的報價單頁面中包含「下載 PDF」按鈕，點擊後會使用 html2pdf.js 將頁面轉換成 PDF 文件，供使用者下載與列印。
+### 3. 確認 `wrangler.jsonc` 設定
 
-4. **分享功能**  
-   可將表單資料編碼為 query string，生成一個分享用的 URL，打開該 URL 時自動填入報價單內容。
+請打開 `wrangler.jsonc`，檢查 **Cloudflare 帳戶 ID、名稱、環境變數** 是否正確(如果有的話)。例如：
 
-## 部署
+```jsonc
+{
+  "name": "estimate-generator",
+  "account_id": "<你的 Cloudflare 帳戶 ID>",
+  "compatibility_date": "2025-03-08",
+  "workers_dev": true
+}
+```
 
-您可以使用 Cloudflare Wrangler 工具將此專案部署到 Cloudflare Workers：
+### 4. 安裝相依套件
 
-1. **安裝 Wrangler**  
-   如果尚未安裝，請執行：
-   ```bash
-   npm install -g @cloudflare/wrangler
-   ```
+```bash
+npm install
+```
 
-2. **建立 wrangler.toml**  
-   在專案根目錄建立 `wrangler.toml`，例如：
-   ```toml
-   name = "estimate-generator"
-   type = "javascript"
-   account_id = "<你的帳號 ID>"
-   workers_dev = true
-   compatibility_date = "2025-03-08"
-   ```
+### 5. 部署至 Cloudflare Workers 。請參考 package.json 中的 scripts 指令
 
-3. **部署**  
-   執行以下命令將 Worker 部署到 Cloudflare：
-   ```bash
-   wrangler publish
-   ```
+```bash
+wrangler deploy
+```
 
 部署成功後，您的 Worker 將可在 `https://estimate-generator.crazyjerry.workers.dev/`（或您設定的自訂域名）訪問。
 
