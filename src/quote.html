@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>報價單 {{quoteNumber}}</title>
+    <style>
+    /* 設定 A4 列印尺寸 */
+    body {
+      background-color: #E5E5E5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 210mm;
+      min-height: 295mm;
+      margin: auto;
+      padding: 20mm;
+      background: #fff;
+      box-sizing: border-box;
+      position: relative;
+      page-break-after: avoid;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header img {
+      max-height: 50px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      color: #2B2927;
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      font-size: 14px;
+      color: #353430;
+    }
+
+    .info-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .info-box {
+      width: 48%;
+    }
+
+    .info-box h2 {
+      font-size: 16px;
+      color: #2B2927;
+      border-bottom: 2px solid #2B2927;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    /* 公司資訊字體稍小 */
+    .company-box p {
+      font-size: 12px;
+      color: #353430;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* 客戶資訊保持較大 */
+    .customer-box p {
+      font-size: 14px;
+      color: #353430;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      border: 1px solid #353430;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #353430;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    /* Totals 表格：兩行 (標題 + 內容) */
+    .totals-table {
+      width: 100%;
+      margin-top: 20px;
+      border: 1px solid #353430;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .totals-table th,
+    .totals-table td {
+      border: 1px solid #353430;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .totals-table th {
+      background-color: #353430;
+      color: #fff;
+    }
+
+    /* 將總計內容加粗 */
+    .totals-table .total-value {
+      font-weight: bold;
+    }
+
+    .notes {
+      font-size: 12px;
+      color: #353430;
+      line-height: 1.4;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #353430;
+      font-size: 12px;
+    }
+
+    /* 品項描述字體稍小 */
+    .item-description {
+      font-size: 11px;
+    }
+
+    /* 下載 PDF 按鈕：右下方圓形浮動按鈕，顯示「下載 PDF」 */
+    #downloadPdfBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 100px;
+      height: 100px;
+      background-color: #353430;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 列印時隱藏下載 PDF 按鈕 */
+    @media print {
+      #downloadPdfBtn {
+        display: none;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container" id="quoteContainer">
+      <button id="downloadPdfBtn" onclick="downloadPDF()">下載 PDF</button>
+      <header>
+        <!-- logo 圖片 -->
+        <img src="{{logoBase64}}" data-src="{{logoUrl}}" alt="Logo">
+        <h1>報價單 {{quoteNumber}}</h1>
+        <p>日期: {{date}} &nbsp;&nbsp; 截止日期: {{deadline}}</p>
+      </header>
+      <!-- 兩欄資訊：左側為公司資訊，右側為客戶資訊 -->
+      <div class="info-container">
+        <div class="info-box company-box">
+          <h2>公司資訊</h2>
+          <p><strong>{{providerName}}</strong></p>
+          <p>{{providerContact}}</p>
+        </div>
+        <div class="info-box customer-box">
+          <h2>客戶資訊</h2>
+          <p><strong>{{customerName}}</strong></p>
+          <p>{{customerContact}}</p>
+        </div>
+      </div>
+      <div class="section">
+        <h2>品項明細</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>品項描述</th>
+              <th>單價 (NTD)</th>
+              <th>數量</th>
+              <th>小計 (NTD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{itemsHtml}}
+          </tbody>
+        </table>
+      </div>
+      <div class="section totals">
+        <table class="totals-table">
+          <tr>
+            <th>小計 (NTD)</th>
+            <th>稅金 ({{taxPercent}}% NTD)</th>
+            <th>總計 (NTD)</th>
+          </tr>
+          <tr>
+            <td>{{subtotalFormatted}}</td>
+            <td>{{taxAmountFormatted}}</td>
+            <td class="total-value">{{totalFormatted}}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="section">
+        <h2>備註</h2>
+        <p class="notes">{{remarks}}</p>
+      </div>
+      <footer>
+        <p>請確認以上資訊無誤，並依據合約條款辦理。</p>
+      </footer>
+    </div>
+    <!-- 載入 html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script>
+    function downloadPDF() {
+      const element = document.getElementById("quoteContainer");
+      const opt = {
+        margin: 0,
+        filename: '報價單_{{quoteNumber}}.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    </script>
+    <script>
+    // 使用 fetch() API 將圖片轉換為 Base64
+    function convertImgToBase64(url) {
+      return fetch(url)
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        }));
+    }
+
+    // 當頁面載入完成後，讀取 logo 的原始 URL 並轉換成 Base64，再更新 img 的 src 屬性
+    document.addEventListener("DOMContentLoaded", function() {
+      const logoImg = document.querySelector("img[alt='Logo']");
+      if (logoImg) {
+        const logoUrl = logoImg.src; // 原本的外部 URL
+        convertImgToBase64(logoUrl).then(base64 => {
+          logoImg.src = base64;
+        }).catch(error => {
+          console.error("Error converting logo image to Base64:", error);
+        });
+      }
+    });
+
+    </script>
+  </body>
+
+</html>
