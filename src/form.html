@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>報價單產生器</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -25,7 +25,8 @@
   <body>
     <div class="container my-4">
       <h1 class="text-center mb-4">報價單產生器</h1>
-      <form method="POST">
+      <!-- method="POST" 只是示例，實際動作需搭配後端設定 -->
+      <form id="quoteForm" method="POST">
         <div class="row">
           <!-- 左側：基本資料 -->
           <div class="col-md-6">
@@ -76,12 +77,19 @@
             <h2>品項細節</h2>
             <table class="table table-bordered" id="itemsTable">
               <tbody>
-                <!-- 這裡原本放的初始兩行 (品項描述 + 數量單價) 可以拿掉，改用下方的模板 + JS 動態生成 -->
+                <!-- 此處預設不放任何<tr>，直接靠JS動態插入 -->
               </tbody>
             </table>
-            <button type="button" id="addItemButton" class="btn btn-primary">
-              ＋ 新增品項
-            </button>
+            <!-- 新增品項 + 刷新 按鈕組（刷新按鈕置右，正方形） -->
+            <div class="d-flex mb-3">
+              <button type="button" id="addItemButton" class="btn btn-primary">
+                ＋ 新增品項
+              </button>
+              <!-- ms-auto 表示往左推，讓按鈕跑到最右邊 -->
+              <button type="button" id="refreshButton" class="btn btn-secondary ms-auto d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" title="刷新">
+                ↺
+              </button>
+            </div>
             <div class="mb-3 mt-3">
               <label for="taxPercent" class="form-label">稅金百分比 (%)</label>
               <input type="number" class="form-control" id="taxPercent" name="taxPercent" step="1" min="0" value="0" required />
@@ -107,29 +115,56 @@
         </button>
       </form>
     </div>
-    <!-- 隱藏的品項模板：預先寫好兩行 (描述 + 數量/單價/刪除) -->
-    <div id="itemTemplate" style="display: none;">
+    <!-- 隱藏的品項模板：數量、單價、刪除 都在同一行 -->
+    <script type="text/template" id="itemTemplate">
       <tr class="descRow">
         <td colspan="3">
-          <textarea class="form-control" name="itemDescription" placeholder="品項描述" rows="3" required></textarea>
+          <textarea
+            class="form-control"
+            name="itemDescription"
+            placeholder="品項描述"
+            rows="3"
+            required
+          ></textarea>
         </td>
       </tr>
       <tr class="numberRow">
         <td>
           <label class="form-label">數量</label>
-          <input type="number" class="form-control" name="itemQuantity" step="1" min="0" value="0" required />
+          <input
+            type="number"
+            class="form-control"
+            name="itemQuantity"
+            step="1"
+            min="0"
+            value="0"
+            required
+          />
         </td>
         <td>
           <label class="form-label">單價</label>
-          <input type="number" class="form-control" name="itemUnitPrice" step="1" min="0" value="0" required />
+          <input
+            type="number"
+            class="form-control"
+            name="itemUnitPrice"
+            step="1"
+            min="0"
+            value="0"
+            required
+          />
         </td>
         <td class="delete-cell align-middle">
-          <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)" title="刪除">
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+            onclick="removeRow(this)"
+            title="刪除"
+          >
             X
           </button>
         </td>
       </tr>
-    </div>
+    </script>
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS CDN -->
@@ -166,23 +201,25 @@
       return "EST" + yy + mm + dd + hh + min + rand;
     }
 
-    // 新增品項（兩行：描述、數量/單價/刪除）
+    // 新增品項（描述 + 數量 / 單價 / 刪除）
     function addRow() {
-      // 從隱藏的 #itemTemplate 中，把裡面所有的 <tr> 組合克隆出來
-      const clonedRows = $("#itemTemplate").children().clone();
-      // 加到表格 <tbody> 最後面
-      $("#itemsTable tbody").append(clonedRows);
-
-      // 新增完後順便更新計算
+      // 取出模板裡的 HTML 字串
+      const templateHtml = $("#itemTemplate").html();
+      // 加到表格 <tbody>
+      $("#itemsTable tbody").append(templateHtml);
+      // 新增完後即刻重新計算
       updateTotals();
     }
 
-    // 刪除品項（同時移除描述與數字列）
+    // 刪除品項（包含描述那一行 + 數值那一行）
     function removeRow(button) {
       const $btn = $(button);
-      const $rowNumbers = $btn.closest("tr"); // 這裡是數量/單價那一列
-      const $rowDesc = $rowNumbers.prev("tr"); // 描述那一列在它上面
-      // 保證至少要留一組品項
+      // 數量/單價那一行
+      const $rowNumbers = $btn.closest("tr");
+      // 描述那一行在它上面
+      const $rowDesc = $rowNumbers.prev("tr");
+
+      // 至少保留一組品項
       if ($("#itemsTable tbody tr").length > 2) {
         $rowDesc.remove();
         $rowNumbers.remove();
@@ -192,21 +229,32 @@
       }
     }
 
-    // 計算小計、稅金與總計（均以整數運算，採 Math.floor 捨去小數）
+    // 計算小計、稅金、總計
     function updateTotals() {
       let subtotal = 0;
-      $('input[name="itemQuantity"]').each(function(index) {
+
+      $("input[name='itemQuantity']").each(function(index) {
         const qty = parseInt($(this).val()) || 0;
         const price =
-          parseInt($('input[name="itemUnitPrice"]').eq(index).val()) || 0;
+          parseInt($("input[name='itemUnitPrice']").eq(index).val()) || 0;
         subtotal += qty * price;
       });
+
       const taxPercent = parseInt($("#taxPercent").val()) || 0;
       const tax = Math.floor((subtotal * taxPercent) / 100);
       const total = subtotal + tax;
+
       $("#subtotalDisplay").text(subtotal);
       $("#taxDisplay").text(tax);
       $("#totalDisplay").text(total);
+    }
+
+    // 事件：若輸入框 blur 時發現為空，就改成 "0"
+    function handleBlurSetZero() {
+      if ($(this).val().trim() === "") {
+        $(this).val("0");
+      }
+      updateTotals();
     }
 
     // 預設假資料（新假資料）
@@ -236,6 +284,8 @@
     // 自動填入預設假資料
     function autofillForm() {
       const data = getDefaultFakeData();
+
+      // 填入左側基本資料
       $("#logoUrl").val(data.logoUrl);
       $("#providerName").val(data.providerName);
       $("#providerContact").val(data.providerContact);
@@ -247,46 +297,94 @@
       // 先清空品項表格
       $("#itemsTable tbody").empty();
 
-      // 依據資料新增品項
+      // 依據資料 新增多筆品項
       data.items.forEach(function(item) {
-        // 1) 先把整組模板克隆出來
-        const clonedRows = $("#itemTemplate").children().clone();
+        // 1) 拿到模板字串
+        const templateHtml = $("#itemTemplate").html();
+        // 2) parseHTML 後包成 jQuery 物件
+        const $cloned = $($.parseHTML(templateHtml));
 
-        // 2) 尋找描述欄位、數量與單價欄位，填入假資料
-        //   descRow 這一行
-        clonedRows
-          .filter(".descRow")
+        // 3) 填入品項資料
+        $cloned.filter(".descRow")
           .find('textarea[name="itemDescription"]')
           .val(item.desc);
 
-        //   numberRow 這一行
-        clonedRows
-          .filter(".numberRow")
+        $cloned.filter(".numberRow")
           .find('input[name="itemQuantity"]')
           .val(item.qty);
-        clonedRows
-          .filter(".numberRow")
+
+        $cloned.filter(".numberRow")
           .find('input[name="itemUnitPrice"]')
           .val(item.price);
 
-        // 3) 把這組兩行加到表格
-        $("#itemsTable tbody").append(clonedRows);
+        // 4) 加到表格
+        $("#itemsTable tbody").append($cloned);
       });
 
+      // 最後更新合計
       updateTotals();
     }
 
     $(document).ready(function() {
+      // 預設日期
       setDefaultDates();
+
+      // 報價單編號沒填就自動產生一個
       if (!$("#quoteNumber").val()) {
         $("#quoteNumber").val(generateQuoteNumber());
       }
 
+      // 一開始先新增一筆空的項目
+      addRow();
+
+      // 1) 手動更新「稅金百分比」時立即計算
       $("#taxPercent").on("input", updateTotals);
+
+      // 2) 若稅率失焦點、且值為空 => 0
+      $("#taxPercent").on("blur", handleBlurSetZero);
+
+      // 3) 對 #itemsTable 委派監聽 => 當子層的 itemQuantity / itemUnitPrice 在 input 時，立即計算
+      $("#itemsTable").on(
+        "input",
+        'input[name="itemQuantity"], input[name="itemUnitPrice"]',
+        updateTotals
+      );
+
+      // 4) 若數量、單價失焦點 & 值為空 => 設成 0
+      $("#itemsTable").on(
+        "blur",
+        'input[name="itemQuantity"], input[name="itemUnitPrice"]',
+        handleBlurSetZero
+      );
+
+      // 綁定「新增品項」按鈕
       $("#addItemButton").on("click", addRow);
 
-      // 範例：若想進到頁面就立刻帶假資料，可以在這裡呼叫
-      // autofillForm();
+      // 綁定「刷新」按鈕
+      $("#refreshButton").on("click", function() {
+        updateTotals();
+        alert("已重新計算小計、稅金和總計。");
+      });
+
+      // 監聽表單送出事件
+      $("#quoteForm").on("submit", function(e) {
+        // 送出前再次更新
+        updateTotals();
+
+        // 顯示 confirm
+        const confirmed = confirm(
+          "小計：" +
+          $("#subtotalDisplay").text() +
+          "\n稅金：" +
+          $("#taxDisplay").text() +
+          "\n總計：" +
+          $("#totalDisplay").text() +
+          "\n\n是否確認送出？"
+        );
+        if (!confirmed) {
+          e.preventDefault(); // 使用者按下「取消」，阻止送出
+        }
+      });
     });
 
     </script>
