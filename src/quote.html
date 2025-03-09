@@ -183,37 +183,6 @@
       }
     }
 
-    /* 用章/簽名的表格 */
-    .signature-table {
-      border: 2px solid #353430;
-      border-collapse: collapse;
-      margin-top: 20px;
-      margin-left: auto;
-      /* 靠右對齊 */
-      width: 150px;
-      /* 可自行調整寬度 */
-    }
-
-    .signature-table td {
-      border: 2px solid #353430;
-      font-size: 12px;
-      text-align: center;
-      vertical-align: middle;
-      padding: 8px;
-      height: 50px;
-      /* 第二行可再加大高度 */
-    }
-
-    .signature-table .stamp-title {
-      height: 30px;
-      /* 第一行高度 */
-    }
-
-    .signature-table .stamp-area {
-      height: 60px;
-      /* 第二行高度預留蓋章或簽名 */
-    }
-
     </style>
   </head>
 
@@ -273,16 +242,11 @@
         <h2>備註</h2>
         <p class="notes">{{remarks}}</p>
       </div>
-      <!-- 用章/簽名方塊 (兩行，粗線邊框，置右) -->
-      <div class="section" style="text-align: right;">
-        <table class="signature-table">
-          <tr>
-            <td class="stamp-title">用章 / 簽名</td>
-          </tr>
-          <tr>
-            <td class="stamp-area"></td>
-          </tr>
-        </table>
+      <!-- 公司用印欄位：分兩行，第一行小字「用章/簽名」-->
+      <div class="section" style="margin-top: 40px;">
+        <p style="font-size: 12px; margin-bottom: 5px;">用章 / 簽名</p>
+        <!-- 第二行留空白，預留給公司蓋章或簽名 -->
+        <p style="height: 60px; border-bottom: 1px solid #353430; margin: 0;"></p>
       </div>
       <footer>
         <p>請確認以上資訊無誤，並依據合約條款辦理。</p>
