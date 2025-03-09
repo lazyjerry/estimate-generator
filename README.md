@@ -76,7 +76,7 @@ npm install
 wrangler deploy
 ```
 
-部署成功後，您的 Worker 將可在 `https://estimate-generator.crazyjerry.workers.dev/`（或您設定的自訂域名）訪問。
+部署成功後，您的 Worker 將可在類似的網址 `https://estimate-generator.crazyjerry.workers.dev/`或您設定的自訂域名訪問。
 
 ## 自定義
 
