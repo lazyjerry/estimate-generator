@@ -5,21 +5,21 @@
     <meta charset="UTF-8">
     <title>報價單產生器</title>
     <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
       /* 額外自訂樣式 */
-    #submitButton {
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-    }
-    .delete-cell {
-      width: 50px;
-      text-align: center;
-    }
-  </style>
+      #submitButton {
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+      .delete-cell {
+        width: 50px;
+        text-align: center;
+      }
+    </style>
   </head>
 
   <body>
@@ -31,11 +31,11 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="logoUrl" class="form-label">Logo URL</label>
-              <input type="text" class="form-control" id="logoUrl" name="logoUrl" placeholder="例如：https://example.com/logo.png" value="">
+              <input type="text" class="form-control" id="logoUrl" name="logoUrl" placeholder="例如：https://example.com/logo.png" value="" />
             </div>
             <div class="mb-3">
               <label for="providerName" class="form-label">乙方 (報價單位)</label>
-              <input type="text" class="form-control" id="providerName" name="providerName" placeholder="例如：乙方示例公司" required>
+              <input type="text" class="form-control" id="providerName" name="providerName" placeholder="例如：乙方示例公司" required />
             </div>
             <div class="mb-3">
               <label for="providerContact" class="form-label">乙方聯絡資訊</label>
@@ -43,7 +43,7 @@
             </div>
             <div class="mb-3">
               <label for="customerName" class="form-label">甲方 (客戶)</label>
-              <input type="text" class="form-control" id="customerName" name="customerName" placeholder="例如：甲方示例企業" required>
+              <input type="text" class="form-control" id="customerName" name="customerName" placeholder="例如：甲方示例企業" required />
             </div>
             <div class="mb-3">
               <label for="customerContact" class="form-label">甲方聯絡資訊</label>
@@ -51,15 +51,15 @@
             </div>
             <div class="mb-3">
               <label for="quoteNumber" class="form-label">報價單編號</label>
-              <input type="text" class="form-control" id="quoteNumber" name="quoteNumber" required>
+              <input type="text" class="form-control" id="quoteNumber" name="quoteNumber" required />
             </div>
             <div class="mb-3">
               <label for="dateInput" class="form-label">日期</label>
-              <input type="date" class="form-control" id="dateInput" name="date" required>
+              <input type="date" class="form-control" id="dateInput" name="date" required />
             </div>
             <div class="mb-3">
               <label for="deadlineInput" class="form-label">截止日期</label>
-              <input type="date" class="form-control" id="deadlineInput" name="deadline" required>
+              <input type="date" class="form-control" id="deadlineInput" name="deadline" required />
             </div>
             <div class="mb-3">
               <label for="remarks" class="form-label">備註</label>
@@ -76,31 +76,15 @@
             <h2>品項細節</h2>
             <table class="table table-bordered" id="itemsTable">
               <tbody>
-                <!-- 初始品項，每筆品項以兩行呈現 -->
-                <tr>
-                  <td colspan="3">
-                    <textarea class="form-control" name="itemDescription" placeholder="品項描述" rows="3" required></textarea>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <label class="form-label">數量</label>
-                    <input type="number" class="form-control" name="itemQuantity" step="1" min="0" value="0" required>
-                  </td>
-                  <td>
-                    <label class="form-label">單價</label>
-                    <input type="number" class="form-control" name="itemUnitPrice" step="1" min="0" value="0" required>
-                  </td>
-                  <td class="delete-cell align-middle">
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)" title="刪除">X</button>
-                  </td>
-                </tr>
+                <!-- 這裡原本放的初始兩行 (品項描述 + 數量單價) 可以拿掉，改用下方的模板 + JS 動態生成 -->
               </tbody>
             </table>
-            <button type="button" id="addItemButton" class="btn btn-primary">＋ 新增品項</button>
+            <button type="button" id="addItemButton" class="btn btn-primary">
+              ＋ 新增品項
+            </button>
             <div class="mb-3 mt-3">
               <label for="taxPercent" class="form-label">稅金百分比 (%)</label>
-              <input type="number" class="form-control" id="taxPercent" name="taxPercent" step="1" min="0" value="0" required>
+              <input type="number" class="form-control" id="taxPercent" name="taxPercent" step="1" min="0" value="0" required />
             </div>
             <!-- Totals 以兩行表格呈現 -->
             <table class="table table-bordered text-center mt-3">
@@ -118,8 +102,33 @@
           </div>
         </div>
         <!-- 浮動的圓形提交按鈕 -->
-        <button type="submit" id="submitButton" class="btn btn-success rounded-circle position-fixed">&#10003;</button>
+        <button type="submit" id="submitButton" class="btn btn-success rounded-circle position-fixed">
+          &#10003;
+        </button>
       </form>
+    </div>
+    <!-- 隱藏的品項模板：預先寫好兩行 (描述 + 數量/單價/刪除) -->
+    <div id="itemTemplate" style="display: none;">
+      <tr class="descRow">
+        <td colspan="3">
+          <textarea class="form-control" name="itemDescription" placeholder="品項描述" rows="3" required></textarea>
+        </td>
+      </tr>
+      <tr class="numberRow">
+        <td>
+          <label class="form-label">數量</label>
+          <input type="number" class="form-control" name="itemQuantity" step="1" min="0" value="0" required />
+        </td>
+        <td>
+          <label class="form-label">單價</label>
+          <input type="number" class="form-control" name="itemUnitPrice" step="1" min="0" value="0" required />
+        </td>
+        <td class="delete-cell align-middle">
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)" title="刪除">
+            X
+          </button>
+        </td>
+      </tr>
     </div>
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -131,64 +140,55 @@
       const today = new Date();
       today.setDate(today.getDate() + 2);
       const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
       const todayStr = `${yyyy}-${mm}-${dd}`;
-      $('#dateInput').val(todayStr);
+      $("#dateInput").val(todayStr);
 
       const deadline = new Date(today);
       deadline.setDate(deadline.getDate() + 14);
       const yyyy2 = deadline.getFullYear();
-      const mm2 = String(deadline.getMonth() + 1).padStart(2, '0');
-      const dd2 = String(deadline.getDate()).padStart(2, '0');
+      const mm2 = String(deadline.getMonth() + 1).padStart(2, "0");
+      const dd2 = String(deadline.getDate()).padStart(2, "0");
       const deadlineStr = `${yyyy2}-${mm2}-${dd2}`;
-      $('#deadlineInput').val(deadlineStr);
+      $("#deadlineInput").val(deadlineStr);
     }
 
     // 產生報價單編號：格式 EST + (最後兩位年份 + 月日小時分鐘 + 隨機一位數)
     function generateQuoteNumber() {
       const now = new Date();
       const yy = String(now.getFullYear()).slice(-2);
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const hh = String(now.getHours()).padStart(2, '0');
-      const min = String(now.getMinutes()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const hh = String(now.getHours()).padStart(2, "0");
+      const min = String(now.getMinutes()).padStart(2, "0");
       const rand = Math.floor(Math.random() * 10); // 隨機一位數
       return "EST" + yy + mm + dd + hh + min + rand;
     }
 
     // 新增品項（兩行：描述、數量/單價/刪除）
     function addRow() {
-      const rowDesc = $('<tr><td colspan="3"><textarea class="form-control" name="itemDescription" placeholder="品項描述" rows="3" required></textarea></td></tr>');
-      const rowNumbers = $(`
-        <tr>
-          <td>
-            <label class="form-label">數量</label>
-            <input type="number" class="form-control" name="itemQuantity" step="1" min="0" value="0" required>
-          </td>
-          <td>
-            <label class="form-label">單價</label>
-            <input type="number" class="form-control" name="itemUnitPrice" step="1" min="0" value="0" required>
-          </td>
-          <td class="delete-cell align-middle">
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)" title="刪除">X</button>
-          </td>
-        </tr>
-      `);
-      $('#itemsTable tbody').append(rowDesc).append(rowNumbers);
+      // 從隱藏的 #itemTemplate 中，把裡面所有的 <tr> 組合克隆出來
+      const clonedRows = $("#itemTemplate").children().clone();
+      // 加到表格 <tbody> 最後面
+      $("#itemsTable tbody").append(clonedRows);
+
+      // 新增完後順便更新計算
+      updateTotals();
     }
 
     // 刪除品項（同時移除描述與數字列）
     function removeRow(button) {
       const $btn = $(button);
-      const $rowNumbers = $btn.closest('tr');
-      const $rowDesc = $rowNumbers.prev('tr');
-      if ($('#itemsTable tbody tr').length > 2) {
+      const $rowNumbers = $btn.closest("tr"); // 這裡是數量/單價那一列
+      const $rowDesc = $rowNumbers.prev("tr"); // 描述那一列在它上面
+      // 保證至少要留一組品項
+      if ($("#itemsTable tbody tr").length > 2) {
         $rowDesc.remove();
         $rowNumbers.remove();
         updateTotals();
       } else {
-        alert('至少需保留一個品項');
+        alert("至少需保留一個品項");
       }
     }
 
@@ -197,15 +197,16 @@
       let subtotal = 0;
       $('input[name="itemQuantity"]').each(function(index) {
         const qty = parseInt($(this).val()) || 0;
-        const price = parseInt($('input[name="itemUnitPrice"]').eq(index).val()) || 0;
+        const price =
+          parseInt($('input[name="itemUnitPrice"]').eq(index).val()) || 0;
         subtotal += qty * price;
       });
-      const taxPercent = parseInt($('#taxPercent').val()) || 0;
-      const tax = Math.floor(subtotal * taxPercent / 100);
+      const taxPercent = parseInt($("#taxPercent").val()) || 0;
+      const tax = Math.floor((subtotal * taxPercent) / 100);
       const total = subtotal + tax;
-      $('#subtotalDisplay').text(subtotal);
-      $('#taxDisplay').text(tax);
-      $('#totalDisplay').text(total);
+      $("#subtotalDisplay").text(subtotal);
+      $("#taxDisplay").text(tax);
+      $("#totalDisplay").text(total);
     }
 
     // 預設假資料（新假資料）
@@ -216,9 +217,6 @@
         providerContact: "地址：台中市西區示例路 10 號\n電話：04-1234567",
         customerName: "甲方示例企業",
         customerContact: "地址：高雄市前鎮區示例路 20 號\n電話：07-7654321",
-        quoteNumber: generateQuoteNumber(),
-        date: "2024-06-07",
-        deadline: "2024-06-21",
         taxPercent: 5,
         remarks: `1.該份報價附屬於事先簽署的合作合約之中，若無則僅供確認記錄留存，請勿蓋章、回簽。
 2.單價不含稅與支付平台手續費用。發票稅為總價 5%，其餘手續費用另記。
@@ -230,55 +228,65 @@
           { desc: "雲端伺服器架設[優惠]", qty: 1, price: 0 },
           { desc: "購買網域/DNS一年份、代管", qty: 1, price: 1000 },
           { desc: "管理端功能實作", qty: 1, price: 100000 },
-          { desc: "客戶端實作", qty: 1, price: 150000 }
-        ]
+          { desc: "客戶端實作", qty: 1, price: 150000 },
+        ],
       };
     }
 
     // 自動填入預設假資料
     function autofillForm() {
       const data = getDefaultFakeData();
-      $('#logoUrl').val(data.logoUrl);
-      $('#providerName').val(data.providerName);
-      $('#providerContact').val(data.providerContact);
-      $('#customerName').val(data.customerName);
-      $('#customerContact').val(data.customerContact);
-      $('#quoteNumber').val(data.quoteNumber);
-      $('#dateInput').val(data.date);
-      $('#deadlineInput').val(data.deadline);
-      $('#taxPercent').val(data.taxPercent);
-      $('#remarks').val(data.remarks);
+      $("#logoUrl").val(data.logoUrl);
+      $("#providerName").val(data.providerName);
+      $("#providerContact").val(data.providerContact);
+      $("#customerName").val(data.customerName);
+      $("#customerContact").val(data.customerContact);
+      $("#taxPercent").val(data.taxPercent);
+      $("#remarks").val(data.remarks);
 
-      // 清空品項表格
-      $('#itemsTable tbody').empty();
+      // 先清空品項表格
+      $("#itemsTable tbody").empty();
+
       // 依據資料新增品項
       data.items.forEach(function(item) {
-        const rowDesc = $(`<tr><td colspan="3"><textarea class="form-control" name="itemDescription" placeholder="品項描述" rows="3" required>${item.desc}</textarea></td></tr>`);
-        const rowNumbers = $(`
-          <tr>
-            <td>
-              <label class="form-label">數量</label>
-              <input type="number" class="form-control" name="itemQuantity" step="1" min="0" required value="${item.qty}">
-            </td>
-            <td>
-              <label class="form-label">單價</label>
-              <input type="number" class="form-control" name="itemUnitPrice" step="1" min="0" required value="${item.price}">
-            </td>
-            <td class="delete-cell align-middle"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)" title="刪除">X</button></td>
-          </tr>
-        `);
-        $('#itemsTable tbody').append(rowDesc).append(rowNumbers);
+        // 1) 先把整組模板克隆出來
+        const clonedRows = $("#itemTemplate").children().clone();
+
+        // 2) 尋找描述欄位、數量與單價欄位，填入假資料
+        //   descRow 這一行
+        clonedRows
+          .filter(".descRow")
+          .find('textarea[name="itemDescription"]')
+          .val(item.desc);
+
+        //   numberRow 這一行
+        clonedRows
+          .filter(".numberRow")
+          .find('input[name="itemQuantity"]')
+          .val(item.qty);
+        clonedRows
+          .filter(".numberRow")
+          .find('input[name="itemUnitPrice"]')
+          .val(item.price);
+
+        // 3) 把這組兩行加到表格
+        $("#itemsTable tbody").append(clonedRows);
       });
+
       updateTotals();
     }
 
     $(document).ready(function() {
       setDefaultDates();
-      if (!$('#quoteNumber').val()) {
-        $('#quoteNumber').val(generateQuoteNumber());
+      if (!$("#quoteNumber").val()) {
+        $("#quoteNumber").val(generateQuoteNumber());
       }
-      $('#taxPercent').on('input', updateTotals);
-      $('#addItemButton').on('click', addRow);
+
+      $("#taxPercent").on("input", updateTotals);
+      $("#addItemButton").on("click", addRow);
+
+      // 範例：若想進到頁面就立刻帶假資料，可以在這裡呼叫
+      // autofillForm();
     });
 
     </script>
