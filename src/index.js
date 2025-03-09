@@ -95,13 +95,15 @@ export default {
 					logoBase64 = await convertImageToBase64(logoUrl);
 				} catch (error) {
 					console.error("Error converting logo to Base64:", error);
+					// 如果無法轉換就保持原樣
+					logoBase64 = logoUrl;
 				}
 			}
 
 			// 將資料轉換為字串並格式化（例如換行符號替換成 <br>）
 			const data = {
 				logoUrl,
-				logoBase64: logoBase64,
+				logoBase64,
 				providerName,
 				providerContact: providerContact.replace(/\n/g, "<br>"),
 				customerName,
@@ -150,7 +152,22 @@ function templateReplace(template, data) {
 
 async function convertImageToBase64(url) {
 	const response = await fetch(url);
+
+	// 1) 狀態碼不是 2xx，就拋錯
+	if (!response.ok) {
+		throw new Error(`Failed to fetch image. Status: ${response.status} ${response.statusText}`);
+	}
+
+	// 2) 取得 Content-Type，若無就預設 "image/png"
 	const contentType = response.headers.get("Content-Type") || "image/png";
+
+	// 3) 黑名單檢查（若 Content-Type 含有 "text" 或 "html" 等就丟錯）
+	const blackList = ["text", "html"];
+	if (blackList.some(word => contentType.toLowerCase().includes(word))) {
+		throw new Error(`Invalid Content-Type: ${contentType}`);
+	}
+
+	// 4) 轉 ArrayBuffer -> base64
 	const buffer = await response.arrayBuffer();
 	const base64 = arrayBufferToBase64(buffer);
 	return `data:${contentType};base64,${base64}`;

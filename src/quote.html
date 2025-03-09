@@ -288,6 +288,30 @@
     <script>
     function downloadPDF() {
       const element = document.getElementById("quoteContainer");
+
+      // 檢查所有 <img>，若有任何一個 src 不是 base64，跳出確認
+      const imgs = element.querySelectorAll("img");
+      let hasNonBase64 = false;
+
+      imgs.forEach(img => {
+        const src = img.getAttribute("src") || "";
+        // 最簡單的判斷：如果 src 不是以 "data:" 開頭，就視為非 base64
+        if (!src.startsWith("data:")) {
+          hasNonBase64 = true;
+        }
+      });
+
+      if (hasNonBase64) {
+        const confirmed = confirm(
+          "圖片為網址，可能無法正常顯示在 PDF 中，確認是否要下載？"
+        );
+        if (!confirmed) {
+          // 使用者按下「取消」則終止下載
+          return;
+        }
+      }
+
+      // 若通過檢查或使用者仍要下載，則執行 html2pdf
       const opt = {
         margin: 0,
         filename: '報價單_{{quoteNumber}}.pdf',
@@ -297,33 +321,17 @@
       };
       html2pdf().set(opt).from(element).save();
     }
-
-    </script>
-    <script>
-    // 使用 fetch() API 將圖片轉換為 Base64
-    function convertImgToBase64(url) {
-      return fetch(url)
-        .then(response => response.blob())
-        .then(blob => new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        }));
-    }
-
-    // 當頁面載入完成後，讀取 logo 的原始 URL 並轉換成 Base64，再更新 img 的 src 屬性
-    document.addEventListener("DOMContentLoaded", function() {
-      const logoImg = document.querySelector("img[alt='Logo']");
-      if (logoImg) {
-        const logoUrl = logoImg.src; // 原本的外部 URL
-        convertImgToBase64(logoUrl).then(base64 => {
-          logoImg.src = base64;
-        }).catch(error => {
-          console.error("Error converting logo image to Base64:", error);
-        });
-      }
-    });
+    // function downloadPDF() {
+    // const element = document.getElementById("quoteContainer");
+    // const opt = {
+    // margin: 0,
+    // filename: '報價單_{{quoteNumber}}.pdf',
+    // image: { type: 'jpeg', quality: 1 },
+    // html2canvas: { scale: 2, useCORS: true },
+    // jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    // };
+    // html2pdf().set(opt).from(element).save();
+    // }
 
     </script>
   </body>
