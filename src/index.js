@@ -170,7 +170,7 @@ function arrayBufferToBase64(buffer) {
 async function checkForBots(request) {
 	const userAgent = request.headers.get("User-Agent") || "";
 	const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
-	const maxRequests = 20; // 每分鐘最大請求數
+	const maxRequests = 30; // 每分鐘最大請求數
 	const timeWindow = 60 * 1000; // 60 秒
 
 	// 若檢測到機器人，返回 dict
