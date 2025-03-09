@@ -136,8 +136,8 @@
             class="form-control"
             name="itemQuantity"
             step="1"
-            min="0"
-            value="0"
+            min="1"
+            value="1"
             required
           />
         </td>
@@ -257,6 +257,14 @@
       updateTotals();
     }
 
+    // 事件：若輸入框 blur 時發現為空，就改成 "1"
+    function handleBlurSetOne() {
+      if ($(this).val().trim() === "" || $(this).val().trim() === "0") {
+        $(this).val("1");
+      }
+      updateTotals();
+    }
+
     // 預設假資料（新假資料）
     function getDefaultFakeData() {
       return {
@@ -350,11 +358,18 @@
         updateTotals
       );
 
+      // 4) 若單價失焦點 & 值為空 => 設成 0
+      $("#itemsTable").on(
+        "blur",
+        'input[name="itemUnitPrice"]',
+        handleBlurSetZero
+      );
+
       // 4) 若數量、單價失焦點 & 值為空 => 設成 0
       $("#itemsTable").on(
         "blur",
-        'input[name="itemQuantity"], input[name="itemUnitPrice"]',
-        handleBlurSetZero
+        'input[name="itemQuantity"]',
+        handleBlurSetOne
       );
 
       // 綁定「新增品項」按鈕
