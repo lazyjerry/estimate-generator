@@ -108,6 +108,28 @@
               </tr>
             </table>
           </div>
+          <div class="col-12 mt-2">
+            <!-- 匯入 & 匯出 區塊 -->
+            <div class="mb-4 mt-5">
+              <hr> <!-- 分隔線，表示這是系統功能 -->
+              <h3 class="text-center">系統功能</h3>
+              <!-- 匯出 JSON -->
+              <div class="mb-3">
+                <label for="exportedJson" class="form-label">匯出 JSON</label>
+                <textarea class="form-control" id="exportedJson" rows="5" readonly></textarea>
+                <button type="button" class="btn btn-primary mt-2" onclick="exportFormData()">匯出</button>
+                <button type="button" class="btn btn-secondary mt-2" onclick="copyExportedJson()">複製 JSON</button>
+                <button type="button" class="btn btn-secondary mt-2" onclick="downloadJson()">下載 JSON</button>
+              </div>
+              <!-- 匯入 JSON -->
+              <div class="mb-3">
+                <label for="importJson" class="form-label">匯入 JSON</label>
+                <textarea class="form-control" id="importJson" rows="5" placeholder="請貼上 JSON"></textarea>
+                <button type="button" class="btn btn-success mt-2" onclick="importFormData()">匯入</button>
+              </div>
+            </div>
+            <!-- ./ -->
+          </div>
         </div>
         <!-- 浮動的圓形提交按鈕 -->
         <button type="submit" id="submitButton" class="btn btn-success rounded-circle position-fixed">
@@ -401,6 +423,110 @@
         }
       });
     });
+
+    </script>
+    <script>
+    // 匯出表單數據為 JSON
+    function exportFormData() {
+      const formData = {
+        logoUrl: $("#logoUrl").val(),
+        providerName: $("#providerName").val(),
+        providerContact: $("#providerContact").val(),
+        customerName: $("#customerName").val(),
+        customerContact: $("#customerContact").val(),
+        quoteNumber: $("#quoteNumber").val(),
+        date: $("#dateInput").val(),
+        deadline: $("#deadlineInput").val(),
+        taxPercent: $("#taxPercent").val(),
+        remarks: $("#remarks").val(),
+        items: []
+      };
+
+      // 取得所有品項資料
+      $("#itemsTable tbody tr.descRow").each(function(index) {
+        const desc = $(this).find("textarea[name='itemDescription']").val();
+        const qty = parseInt($(this).next(".numberRow").find("input[name='itemQuantity']").val(), 10);
+        const price = parseInt($(this).next(".numberRow").find("input[name='itemUnitPrice']").val(), 10);
+
+        formData.items.push({ desc, qty, price });
+      });
+
+      // 顯示 JSON
+      $("#exportedJson").val(JSON.stringify(formData, null, 2));
+    }
+
+    // 複製 JSON 到剪貼簿
+    function copyExportedJson() {
+      const jsonText = $("#exportedJson").val();
+      if (!jsonText) {
+        alert("請先點擊『匯出』按鈕產生 JSON");
+        return;
+      }
+
+      const exportedJson = document.getElementById("exportedJson");
+      exportedJson.select();
+      document.execCommand("copy");
+      alert("JSON 已複製");
+    }
+
+    // 匯入 JSON 到表單
+    function importFormData() {
+      const jsonText = $("#importJson").val();
+
+      try {
+        const data = JSON.parse(jsonText);
+
+        // 填入基本資料
+        $("#logoUrl").val(data.logoUrl);
+        $("#providerName").val(data.providerName);
+        $("#providerContact").val(data.providerContact);
+        $("#customerName").val(data.customerName);
+        $("#customerContact").val(data.customerContact);
+        $("#quoteNumber").val(data.quoteNumber);
+        $("#dateInput").val(data.date);
+        $("#deadlineInput").val(data.deadline);
+        $("#taxPercent").val(data.taxPercent);
+        $("#remarks").val(data.remarks);
+
+        // 清空品項
+        $("#itemsTable tbody").empty();
+
+        // 依據 JSON 重新新增品項
+        data.items.forEach(function(item) {
+          const templateHtml = $("#itemTemplate").html();
+          const $cloned = $($.parseHTML(templateHtml));
+
+          $cloned.filter(".descRow").find('textarea[name="itemDescription"]').val(item.desc);
+          $cloned.filter(".numberRow").find('input[name="itemQuantity"]').val(item.qty);
+          $cloned.filter(".numberRow").find('input[name="itemUnitPrice"]').val(item.price);
+
+          $("#itemsTable tbody").append($cloned);
+        });
+
+        // 重新計算總計
+        updateTotals();
+        alert("JSON 匯入成功");
+      } catch (error) {
+        alert("JSON 格式錯誤，請確認格式是否正確");
+      }
+    }
+
+    // 下載 JSON 檔案
+    function downloadJson() {
+      const jsonText = $("#exportedJson").val();
+      if (!jsonText) {
+        alert("請先點擊『匯出』按鈕產生 JSON");
+        return;
+      }
+
+      const blob = new Blob([jsonText], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `報價單資料＿${new Date().toISOString().replace(/[:.]/g, "_")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
 
     </script>
   </body>
