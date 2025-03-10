@@ -174,6 +174,21 @@
 
     .signature-table .stamp-area {
       height: 60px;
+      position: relative;
+    }
+
+    /* 斜紋背景圖片 */
+    .signature-table .stamp-area .signature-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.1;
+      /* 設置透明度 */
+      pointer-events: none;
+      /* 避免影響簽名 */
+      user-select: none;
     }
 
     /* 下載 PDF 按鈕：右下方圓形浮動按鈕，顯示「下載 PDF」 */
@@ -275,7 +290,9 @@
             <td class="stamp-title">用章 / 簽名</td>
           </tr>
           <tr>
-            <td class="stamp-area"></td>
+            <td class="stamp-area">
+              <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiID8+CjxzdmcgYmFzZVByb2ZpbGU9ImZ1bGwiIGhlaWdodD0iMTAwcHgiIHZlcnNpb249IjEuMSIgd2lkdGg9IjMwMHB4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48cGF0dGVybiBoZWlnaHQ9IjIwIiBpZD0iZGlhZ29uYWxTdHJpcGVzIiBwYXR0ZXJuVHJhbnNmb3JtPSJyb3RhdGUoLTMwKSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjIwIj48cmVjdCBmaWxsPSJyZ2IoNTMsIDUyLCA0OCkiIGZpbGwtb3BhY2l0eT0iMC4zIiBoZWlnaHQ9IjIwIiB3aWR0aD0iMTAiIHg9IjAiIHk9IjAiIC8+PHJlY3QgZmlsbD0icmdiKDI1NSwgMjU1LCAyNTUpIiBmaWxsLW9wYWNpdHk9IjAuMyIgaGVpZ2h0PSIyMCIgd2lkdGg9IjEwIiB4PSIxMCIgeT0iMCIgLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IGZpbGw9IndoaXRlIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIiB4PSIwIiB5PSIwIiAvPjxyZWN0IGZpbGw9InVybCgjZGlhZ29uYWxTdHJpcGVzKSIgaGVpZ2h0PSIxMDAlIiB3aWR0aD0iMTAwJSIgeD0iMCIgeT0iMCIgLz48L3N2Zz4=" class="signature-bg">
+            </td>
           </tr>
         </table>
       </div>
