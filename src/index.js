@@ -14,6 +14,14 @@ const hotComputerRoasts = [
 export default {
 	async fetch(request, env, ctx) {
 
+		const url = new URL(request.url);
+
+		if (url.pathname === "/favicon.ico") {
+			return new Response("🔥", { // 這裡回應的是火焰符號
+				headers: { "Content-Type": "text/plain" }
+			});
+		}
+
 		// 檢查是否為機器人或超過請求頻率
 		const botCheck = await checkForBots(request);
 		if (botCheck.status !== 200) {
