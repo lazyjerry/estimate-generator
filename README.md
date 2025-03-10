@@ -28,6 +28,9 @@
 - **基礎防機器人保護**  
   透過檢查 HTTP User-Agent 標頭，對自動化呼叫進行基本過濾。
 
+- **匯入匯出資料**  
+  表單下方提供匯入與匯出資料功能，資料儲存成 JSON 檔案方便保存與未來擴展。
+
 ## 部署方式
 
 您可以使用 **Cloudflare Wrangler** 工具將此專案部署到 Cloudflare Workers。
