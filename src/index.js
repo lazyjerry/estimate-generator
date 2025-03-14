@@ -58,8 +58,9 @@ export default {
 				});
 			}
 
-
 			const formData = await request.formData();
+
+
 			const logoUrl = formData.get("logoUrl") || "";
 			const providerName = formData.get("providerName") || "";
 			const providerContact = formData.get("providerContact") || "";
@@ -108,6 +109,8 @@ export default {
 				}
 			}
 
+			const formJSON = formData.get('data') || '{}';
+
 			// 將資料轉換為字串並格式化（例如換行符號替換成 <br>）
 			const data = {
 				logoUrl,
@@ -124,7 +127,8 @@ export default {
 				taxPercent: taxPercent,
 				taxAmountFormatted: formatNumber(taxAmount),
 				totalFormatted: formatNumber(total),
-				remarks: remarks.replace(/\n/g, "<br>")
+				remarks: remarks.replace(/\n/g, "<br>"),
+				formJSON: encodeURIComponent(formJSON),
 			};
 
 			// 使用模板字串替換，產生最終 HTML
@@ -195,7 +199,7 @@ function arrayBufferToBase64(buffer) {
 async function checkForBots(request) {
 	const userAgent = request.headers.get("User-Agent") || "";
 	const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
-	const maxRequests = 30; // 每分鐘最大請求數
+	const maxRequests = 120; // 每分鐘最大請求數
 	const timeWindow = 60 * 1000; // 60 秒
 
 	// 若檢測到機器人，返回 dict

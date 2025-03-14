@@ -23,9 +23,9 @@
       /* 小型圓形浮動按鈕（匯出JSON、匯入JSON），置於送出按鈕上方 */
     .fab-sub {
       position: fixed;
-      right: 30px;
-      width: 50px;
-      height: 50px;
+      right: 25px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
       background-color: #6c757d; /* 灰色，可自行調整 */
       color: white;
@@ -53,6 +53,8 @@
       <h1 class="text-center mb-4">報價單產生器</h1>
       <!-- method="POST" 只是示例，實際動作需搭配後端設定 -->
       <form id="quoteForm" method="POST">
+        <!-- 隱藏欄位，用來存放整份 JSON 資料 -->
+        <input type="hidden" name="data" id="dataField" />
         <div class="row">
           <!-- 左側：基本資料 -->
           <div class="col-md-6">
@@ -140,8 +142,8 @@
           &#10003;
         </button>
         <!-- 小型圓形：匯出JSON、匯入JSON -->
-        <button type="button" class="fab-sub" id="exportJsonBtn" onclick="exportFormJSON()" title="匯出 JSON">JSON↓</button>
-        <button type="button" class="fab-sub" id="importJsonBtn" onclick="document.getElementById('importJsonFile').click()" title="匯入 JSON">JSON↑</button>
+        <button type="button" class="fab-sub" id="exportJsonBtn" onclick="exportFormJSON()" title="匯出 JSON">JSON匯出</button>
+        <button type="button" class="fab-sub" id="importJsonBtn" onclick="document.getElementById('importJsonFile').click()" title="匯入 JSON">JSON匯入</button>
         <!-- 隱藏檔案欄位，供匯入 JSON -->
         <input type="file" id="importJsonFile" style="display:none" accept=".json" onchange="importFormJSON(event)" />
       </form>
@@ -280,6 +282,12 @@
       $("#subtotalDisplay").text(subtotal);
       $("#taxDisplay").text(tax);
       $("#totalDisplay").text(total);
+
+      // 先將目前表單的內容組合成物件
+      const formData = gatherFormData();
+      // 轉成 JSON
+      const jsonStr = JSON.stringify(formData, null, 2);
+      document.getElementById('dataField').value = jsonStr;
     }
 
     // 事件：若輸入框 blur 時發現為空，就改成 "0"
@@ -433,6 +441,7 @@
           e.preventDefault(); // 使用者按下「取消」，阻止送出
         } else {
           removeAllFields();
+          console.log("SUBMIT");
         }
       });
     });
