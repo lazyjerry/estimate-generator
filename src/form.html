@@ -10,7 +10,7 @@
       /* 額外自訂樣式 */
       #submitButton {
         bottom: 20px;
-        right: 20px;
+        right: 24px;
         width: 60px;
         height: 60px;
         font-size: 24px;
@@ -19,6 +19,32 @@
         width: 50px;
         text-align: center;
       }
+
+      /* 小型圓形浮動按鈕（匯出JSON、匯入JSON），置於送出按鈕上方 */
+    .fab-sub {
+      position: fixed;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #6c757d; /* 灰色，可自行調整 */
+      color: white;
+      border: none;
+      font-size: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      cursor: pointer;
+    }
+    /* 匯出JSON、匯入JSON 分別用不同 bottom 值 */
+    #exportJsonBtn {
+      bottom:160px; /* 在送出上方再往上一些 */
+    }
+    #importJsonBtn {
+      bottom: 100px; /* 在 exportJsonBtn 之間 */
+    }
     </style>
   </head>
 
@@ -108,33 +134,16 @@
               </tr>
             </table>
           </div>
-          <div class="col-12 mt-2">
-            <!-- 匯入 & 匯出 區塊 -->
-            <div class="mb-4 mt-5">
-              <hr> <!-- 分隔線，表示這是系統功能 -->
-              <h3 class="text-center">系統功能</h3>
-              <!-- 匯出 JSON -->
-              <div class="mb-3">
-                <label for="exportedJson" class="form-label">匯出 JSON</label>
-                <textarea class="form-control" id="exportedJson" rows="5" readonly></textarea>
-                <button type="button" class="btn btn-primary mt-2" onclick="exportFormData()">匯出</button>
-                <button type="button" class="btn btn-secondary mt-2" onclick="copyExportedJson()">複製 JSON</button>
-                <button type="button" class="btn btn-secondary mt-2" onclick="downloadJson()">下載 JSON</button>
-              </div>
-              <!-- 匯入 JSON -->
-              <div class="mb-3">
-                <label for="importJson" class="form-label">匯入 JSON</label>
-                <textarea class="form-control" id="importJson" rows="5" placeholder="請貼上 JSON"></textarea>
-                <button type="button" class="btn btn-success mt-2" onclick="importFormData()">匯入</button>
-              </div>
-            </div>
-            <!-- ./ -->
-          </div>
         </div>
         <!-- 浮動的圓形提交按鈕 -->
         <button type="submit" id="submitButton" class="btn btn-success rounded-circle position-fixed">
           &#10003;
         </button>
+        <!-- 小型圓形：匯出JSON、匯入JSON -->
+        <button type="button" class="fab-sub" id="exportJsonBtn" onclick="exportFormJSON()" title="匯出 JSON">JSON↓</button>
+        <button type="button" class="fab-sub" id="importJsonBtn" onclick="document.getElementById('importJsonFile').click()" title="匯入 JSON">JSON↑</button>
+        <!-- 隱藏檔案欄位，供匯入 JSON -->
+        <input type="file" id="importJsonFile" style="display:none" accept=".json" onchange="importFormJSON(event)" />
       </form>
     </div>
     <!-- 隱藏的品項模板：數量、單價、刪除 都在同一行 -->
@@ -191,6 +200,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FileSaver.js 用於下載 JSON -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
     // 設定日期預設值：後天及後 14 天
     function setDefaultDates() {
@@ -420,14 +431,54 @@
         );
         if (!confirmed) {
           e.preventDefault(); // 使用者按下「取消」，阻止送出
+        } else {
+          removeAllFields();
         }
       });
     });
 
     </script>
     <script>
-    // 匯出表單數據為 JSON
-    function exportFormData() {
+    // 匯出 JSON => 產生檔案
+    function exportFormJSON() {
+      // 先將目前表單的內容組合成物件
+      const formData = gatherFormData();
+      // 轉成 JSON
+      const jsonStr = JSON.stringify(formData, null, 2);
+      // 準備下載檔名
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const sec = String(now.getSeconds()).padStart(2, '0');
+      const dateTimeStr = `${yyyy}_${mm}_${dd}_${hh}_${min}_${sec}`;
+      const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+      saveAs(blob, `quoteData_${dateTimeStr}.json`);
+    }
+
+    // 匯入 JSON
+    function importFormJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          fillFormData(data);
+          alert("匯入成功！表單已更新。");
+        } catch (error) {
+          alert("JSON 格式錯誤或無法解析。");
+        }
+      };
+      reader.readAsText(file);
+      // reset input value
+      event.target.value = "";
+    }
+
+    // 讀取當前表單 (quoteForm) 並轉成物件
+    function gatherFormData() {
       const formData = {
         logoUrl: $("#logoUrl").val(),
         providerName: $("#providerName").val(),
@@ -441,91 +492,76 @@
         remarks: $("#remarks").val(),
         items: []
       };
-
-      // 取得所有品項資料
+      // 取得所有品項
       $("#itemsTable tbody tr.descRow").each(function(index) {
         const desc = $(this).find("textarea[name='itemDescription']").val();
         const qty = parseInt($(this).next(".numberRow").find("input[name='itemQuantity']").val(), 10);
         const price = parseInt($(this).next(".numberRow").find("input[name='itemUnitPrice']").val(), 10);
-
         formData.items.push({ desc, qty, price });
       });
-
-      // 顯示 JSON
-      $("#exportedJson").val(JSON.stringify(formData, null, 2));
+      return formData;
     }
 
-    // 複製 JSON 到剪貼簿
-    function copyExportedJson() {
-      const jsonText = $("#exportedJson").val();
-      if (!jsonText) {
-        alert("請先點擊『匯出』按鈕產生 JSON");
-        return;
-      }
+    // 將 JSON 內容填回表單
+    function fillFormData(data) {
+      $("#logoUrl").val(data.logoUrl || "");
+      $("#providerName").val(data.providerName || "");
+      $("#providerContact").val(data.providerContact || "");
+      $("#customerName").val(data.customerName || "");
+      $("#customerContact").val(data.customerContact || "");
+      $("#quoteNumber").val(data.quoteNumber || "");
+      $("#dateInput").val(data.date || "");
+      $("#deadlineInput").val(data.deadline || "");
+      $("#taxPercent").val(data.taxPercent || 0);
+      $("#remarks").val(data.remarks || "");
 
-      const exportedJson = document.getElementById("exportedJson");
-      exportedJson.select();
-      document.execCommand("copy");
-      alert("JSON 已複製");
-    }
-
-    // 匯入 JSON 到表單
-    function importFormData() {
-      const jsonText = $("#importJson").val();
-
-      try {
-        const data = JSON.parse(jsonText);
-
-        // 填入基本資料
-        $("#logoUrl").val(data.logoUrl);
-        $("#providerName").val(data.providerName);
-        $("#providerContact").val(data.providerContact);
-        $("#customerName").val(data.customerName);
-        $("#customerContact").val(data.customerContact);
-        $("#quoteNumber").val(data.quoteNumber);
-        $("#dateInput").val(data.date);
-        $("#deadlineInput").val(data.deadline);
-        $("#taxPercent").val(data.taxPercent);
-        $("#remarks").val(data.remarks);
-
-        // 清空品項
-        $("#itemsTable tbody").empty();
-
-        // 依據 JSON 重新新增品項
-        data.items.forEach(function(item) {
+      // 清空現有的items
+      $("#itemsTable tbody").empty();
+      // 新增
+      if (Array.isArray(data.items)) {
+        data.items.forEach(item => {
           const templateHtml = $("#itemTemplate").html();
           const $cloned = $($.parseHTML(templateHtml));
 
-          $cloned.filter(".descRow").find('textarea[name="itemDescription"]').val(item.desc);
-          $cloned.filter(".numberRow").find('input[name="itemQuantity"]').val(item.qty);
-          $cloned.filter(".numberRow").find('input[name="itemUnitPrice"]').val(item.price);
+          $cloned.filter(".descRow").find("textarea[name='itemDescription']").val(item.desc);
+          $cloned.filter(".numberRow").find("input[name='itemQuantity']").val(item.qty);
+          $cloned.filter(".numberRow").find("input[name='itemUnitPrice']").val(item.price);
 
           $("#itemsTable tbody").append($cloned);
         });
-
-        // 重新計算總計
-        updateTotals();
-        alert("JSON 匯入成功");
-      } catch (error) {
-        alert("JSON 格式錯誤，請確認格式是否正確");
       }
+      updateTotals();
     }
 
-    // 下載 JSON 檔案
-    function downloadJson() {
-      const jsonText = $("#exportedJson").val();
-      if (!jsonText) {
-        alert("請先點擊『匯出』按鈕產生 JSON");
-        return;
-      }
+    </script>
+    <script>
+    // 固定前綴，可自行修改
+    const LS_PREFIX = "estg";
 
-      const blob = new Blob([jsonText], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `報價單資料＿${new Date().toISOString().replace(/[:.]/g, "_")}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    // 頁面載入後
+    $(document).ready(function() {
+
+      restoreAllFields();
+
+      $("#quoteForm").on("blue change", "input, select, textarea", function(e) {
+        console.log("SAVE");
+        const formData = gatherFormData();
+        const jsonStr = JSON.stringify(formData, null, 2);
+        localStorage.setItem(LS_PREFIX, jsonStr);
+      });
+    });
+
+    function removeAllFields() {
+      localStorage.removeItem(LS_PREFIX);
+    }
+
+    // 還原所有欄位的值
+    function restoreAllFields() {
+      const data = JSON.parse(localStorage.getItem(LS_PREFIX));
+      console.log(data);
+      if (data) {
+        fillFormData(data);
+      }
     }
 
     </script>
