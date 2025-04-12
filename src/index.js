@@ -221,28 +221,28 @@ async function checkForBots(request) {
 		requestCount = parseInt(lastRequestData[0], 10);
 		firstRequestTime = parseInt(lastRequestData[1], 10);
 
-		if (Date.now() - firstRequestTime < timeWindow) {
-			if (requestCount >= maxRequests) {
+	// 	if (Date.now() - firstRequestTime < timeWindow) {
+	// 		if (requestCount >= maxRequests) {
 
-				const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
-				const str = hotComputerRoasts[randomIndex];
+	// 			const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
+	// 			const str = hotComputerRoasts[randomIndex];
 
-				return {
-					status: 429,
-					message: str,
-					newCookie: ""
-				};
-			}
-			requestCount++;
-		} else {
-			// 超過 60 秒重置計數
-			requestCount = 1;
-			firstRequestTime = Date.now();
-		}
-	} else {
-		requestCount = 1;
-		firstRequestTime = Date.now();
-	}
+	// 			return {
+	// 				status: 429,
+	// 				message: str,
+	// 				newCookie: ""
+	// 			};
+	// 		}
+	// 		requestCount++;
+	// 	} else {
+	// 		// 超過 60 秒重置計數
+	// 		requestCount = 1;
+	// 		firstRequestTime = Date.now();
+	// 	}
+	// } else {
+	// 	requestCount = 1;
+	// 	firstRequestTime = Date.now();
+	// }
 	// 設置新的 Cookie（更新請求次數和時間戳）
 	const newCookie = `${clientIP}=${requestCount}|${firstRequestTime}; Max-Age=60; Path=/; HttpOnly; Secure`;
 
