@@ -216,10 +216,10 @@ async function checkForBots(request) {
 	let requestCount = 0;
 	let firstRequestTime = Date.now();
 
-	if (lastRequestData) {
+	// if (lastRequestData) {
 
-		requestCount = parseInt(lastRequestData[0], 10);
-		firstRequestTime = parseInt(lastRequestData[1], 10);
+	// 	requestCount = parseInt(lastRequestData[0], 10);
+	// 	firstRequestTime = parseInt(lastRequestData[1], 10);
 
 	// 	if (Date.now() - firstRequestTime < timeWindow) {
 	// 		if (requestCount >= maxRequests) {
