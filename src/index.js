@@ -48,15 +48,15 @@ export default {
 			const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
 			const lastRequestData = cookies[clientIP] ? cookies[clientIP].split("|") : null;
 
-			if (!refererHeader || !lastRequestData) {
+			// if (!refererHeader || !lastRequestData) {
 
-				// 不符合條件
-				const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
-				const str = hotComputerRoasts[randomIndex];
-				return new Response(str, {
-					status: 400,
-				});
-			}
+			// 	// 不符合條件
+			// 	const randomIndex = Math.floor(Math.random() * hotComputerRoasts.length);
+			// 	const str = hotComputerRoasts[randomIndex];
+			// 	return new Response(str, {
+			// 		status: 400,
+			// 	});
+			// }
 
 			const formData = await request.formData();
 
