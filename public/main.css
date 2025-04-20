@@ -1,0 +1,38 @@
+/* 額外自訂樣式 */
+#submitButton {
+	bottom: 20px;
+	right: 24px;
+	width: 60px;
+	height: 60px;
+	font-size: 24px;
+}
+.delete-cell {
+	width: 50px;
+	text-align: center;
+}
+
+/* 小型圓形浮動按鈕（匯出JSON、匯入JSON），置於送出按鈕上方 */
+.fab-sub {
+	position: fixed;
+	right: 25px;
+	width: 55px;
+	height: 55px;
+	border-radius: 50%;
+	background-color: #6c757d; /* 灰色，可自行調整 */
+	color: white;
+	border: none;
+	font-size: 12px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999;
+	cursor: pointer;
+}
+/* 匯出JSON、匯入JSON 分別用不同 bottom 值 */
+#exportJsonBtn {
+	bottom: 160px; /* 在送出上方再往上一些 */
+}
+#importJsonBtn {
+	bottom: 100px; /* 在 exportJsonBtn 之間 */
+}
