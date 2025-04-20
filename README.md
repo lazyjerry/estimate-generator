@@ -1,97 +1,112 @@
-# 報價單產生器
+報價單產生器 · v2 (Hono + Cloudflare Workers + TypeScript)
 
-這個專案是一個基於 Cloudflare Workers 的報價單產生器。使用者可以透過網頁表單輸入報價資料，系統會自動產生格式化的報價單頁面，並支援列印成 A4 PDF。報價單頁面還包含「下載 PDF」按鈕，方便用戶下載報價單 PDF。
+本專案是一套 基於  Hono 與 Cloudflare Workers 的報價單產生器。
+使用者透過網頁表單輸入資料，系統會： 1. 由 Worker 端計算小計 / 稅金 / 總計， 2. 把資料套用 quote.html 模板，產生格式化的報價單頁面， 3. 內建 「下載  PDF」 按鈕，方便列印或留存。
 
-## 線上 Demo
+新版本重點
+• 採 TypeScript + Hono，程式更簡潔、易維護。
+• 靜態資產改放 /public，由 Wrangler assets.directory 自動部署。
+• 模板採 import quote.html?raw 載入，無需再 fetch。
+• 專案配置改用 wrangler.toml（Wrangler 4  以上）。
 
-請點擊以下網址查看線上 Demo：  
-[https://estimate-generator.crazyjerry.workers.dev/](https://estimate-generator.crazyjerry.workers.dev/)
+⸻
 
-⚠ **請注意：**
-- **Demo 網址可能會因版本變更而有所不同，未必是當前版本，請依實際情況調整。**
-- **可在 Chrome 開發人員工具（F12 或 Ctrl + Shift + I）中執行 `autofillForm()` 來測試自動填入功能。**
+線上 Demo
 
-## 功能特色
+👉 https://estimate-generator.crazyjerry.workers.dev/
 
-- **網頁表單輸入資料**  
-  使用者可在表單中輸入乙方（提供單位）與甲方（客戶）的資訊、報價單編號、日期、截止日期、品項細節（包括品項描述、數量、單價）、稅金百分比及備註。
+⚠ Demo 可能與最新程式碼版本略有差異，請以實際部署為準。
+可在瀏覽器 DevTools console 執行 autofillForm() 觀摩自動填入效果。
 
-- **自動產生報價單頁面**  
-  根據輸入資料，系統將自動計算小計、稅金和總計（採用整數運算並加上逗號千位分隔），並將資料套用至報價單模板中，生成格式化的報價單頁面。
+⸻
 
-- **PDF 下載功能**  
-  報價單頁面提供一個右下角的浮動圓形按鈕「下載 PDF」，點擊後透過 html2pdf.js 將頁面轉換成 PDF，方便用戶下載與列印。
+功能特色
 
-- **Logo Base64 轉換**  
-  為了避免 PDF 轉換時因跨域問題無法載入外部圖片，系統在後端會將 logo 圖片 URL 轉換為 Base64 字串，直接嵌入報價單中。
+功能 說明
+表單輸入 乙方 / 甲方資料、報價單編號、日期、截止日、品項清單、稅率、備註。
+自動試算 Worker 端以整數計算並加上千分位逗號。
+PDF 下載 前端呼叫  html2pdf.js，可直接匯出 A4 PDF。
+Logo Base64 伺服端將外部 Logo 轉 Base64，避免 PDF 跨域失敗。
+Hono Middleware 已內建基本機器人檢查，可擴充 JWT/BasicAuth…。
+匯入 / 匯出 JSON 表單底部可備份/還原輸入內容。
+LocalStorage 快取 關閉頁面資料不遺失。
 
-- **基礎防機器人保護**  
-  透過檢查 HTTP User-Agent 標頭，對自動化呼叫進行基本過濾。
+⸻
 
-- **匯入匯出資料**  
-  表單下方提供匯入與匯出資料功能，資料儲存成 JSON 檔案方便保存與未來擴展。
+專案結構
 
-- **瀏覽器保存功能**
-  表單提供本地瀏覽器保存功能，避免關閉資料丟失。
+estimate-generator/
+├─ public/ # 靜態頁面與資產
+│ ├─ index.html # 填寫表單
+│ ├─ style.css
+│ └─ ...
+├─ src/
+│ ├─ index.ts # Hono 入口
+│ └─ templates/
+│ └─ quote.html # 報價單模板（以 ?raw 匯入）
+├─ wrangler.toml
+└─ package.json
 
-## 部署方式
+⸻
 
-您可以使用 **Cloudflare Wrangler** 工具將此專案部署到 Cloudflare Workers。
+快速開始
 
-### 1. 下載專案
+1. 下載專案
 
-```bash
-git pull https://github.com/your-repo/estimate-generator.git
+git clone https://github.com/your-repo/estimate-generator.git
 cd estimate-generator
-```
 
-### 2. 修改 `package.json` 版本號
+2. 安裝相依
 
-打開 `package.json`，找到 `"version"` 欄位，根據需求進行版本號更新，例如：
-
-```json
-{
-  "name": "estimate-generator",
-  "version": "1.0.1",
-  ...
-}
-```
-
-### 3. 確認 `wrangler.jsonc` 設定
-
-請打開 `wrangler.jsonc`，檢查 **Cloudflare 帳戶 ID、名稱、環境變數** 是否正確(如果有的話)。例如：
-
-```jsonc
-{
-  "name": "estimate-generator",
-  "account_id": "<你的 Cloudflare 帳戶 ID>",
-  "compatibility_date": "2025-03-08",
-  "workers_dev": true
-}
-```
-
-### 4. 安裝相依套件
-
-```bash
 npm install
-```
 
-### 5. 部署至 Cloudflare Workers 。請參考 package.json 中的 scripts 指令
+3. 修改 wrangler.toml
 
-```bash
-wrangler deploy
-```
+name = "estimate-generator"
+account_id = "<你的 Cloudflare 帳戶 ID>"
+compatibility_date = "2025-04-20"
 
-部署成功後，您的 Worker 將可在類似的網址 `https://estimate-generator.crazyjerry.workers.dev/`或您設定的自訂域名訪問。
+# 靜態資產目錄
 
-## 自定義
+assets = { directory = "public" }
 
-- **介面樣式**  
-  您可以編輯 `form.html` 與 `quote.html` 中的 CSS，調整排版、色調與字體以符合您的品牌需求。
+若要綁定 KV／D1／R2，請依 Wrangler 文件添加對應設定。
 
-- **功能擴展**  
-  如需增加進階的防機器人功能、分享功能或其他自定義邏輯，請修改 `index.js` 中相應的程式碼。
+4. 本機開發
 
-## 授權
+npm run dev # 等同 wrangler dev
 
-本專案採用 MIT 授權，歡迎參考與修改。
+# http://localhost:8787/
+
+5. 部署
+
+npm run deploy # wrangler deploy
+
+部署完成後，可透過  https://<worker-name>.<subdomain>.workers.dev/
+或綁定的自訂網域存取。
+
+⸻
+
+自訂化
+
+方向 說明
+樣式 / 版面 編輯 public/style.css 或在 quote.html 中覆寫 CSS。
+模板欄位 修改 src/templates/quote.html，並在 handleQuote() 中新增對應 {{placeholder}}。
+防機器人 Hono 提供 basicAuth(), jwt() 中介軟體；也可接 reCAPTCHA。
+PDF 品質 public/index.html 中 html2pdf 參數可調解析度、邊距。
+CI/CD 將 wrangler deploy 併入 GitHub Actions 即可自動發布。
+
+⸻
+
+常見問題
+
+問題 解答
+圖片太大導致 Data URI 超過 10 MiB？ 在前端先縮圖、或改用 Cloudflare R2／圖床並允許 img 直接連外。
+要改用 Deno Deploy? Hono 語法不變，只需把 wrangler.toml 換成 deno.json 並移除 assets.directory，再用 hono/deno 的 serveStatic。
+如何新增品項欄位驗證？ 在 handleQuote 取值後加入邏輯，或使用 zod 搭配 c.req.valid()。
+
+⸻
+
+授權
+
+MIT License – 歡迎自由使用、修改與商業化。如有問題或建議，歡迎開  Issue 或提  PR 🙌
