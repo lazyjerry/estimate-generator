@@ -1,13 +1,18 @@
 報價單產生器 · v2 (Hono + Cloudflare Workers + TypeScript)
 
 本專案是一套 基於  Hono 與 Cloudflare Workers 的報價單產生器。
-使用者透過網頁表單輸入資料，系統會： 1. 由 Worker 端計算小計 / 稅金 / 總計， 2. 把資料套用 quote.html 模板，產生格式化的報價單頁面， 3. 內建 「下載  PDF」 按鈕，方便列印或留存。
+使用者透過網頁表單輸入資料，系統會：
+
+1.  由 Worker 端計算小計 / 稅金 / 總計
+2.  把資料套用 quote.html 模板，產生格式化的報價單頁面
+3.  內建 「下載  PDF」 按鈕，方便列印或留存。
 
 新版本重點
-• 採 TypeScript + Hono，程式更簡潔、易維護。
-• 靜態資產改放 /public，由 Wrangler assets.directory 自動部署。
-• 模板採 import quote.html?raw 載入，無需再 fetch。
-• 專案配置改用 wrangler.toml（Wrangler 4  以上）。
+
+- 採 TypeScript + Hono，程式更簡潔、易維護。
+- 靜態資產改放 /public，由 Wrangler assets.directory 自動部署。
+- 模板採 import quote.html?raw 載入，無需再 fetch。
+- 專案配置改用 wrangler.toml（Wrangler 4  以上）。
 
 ⸻
 
