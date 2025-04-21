@@ -11,8 +11,6 @@
 
 - 採 TypeScript + Hono，程式更簡潔、易維護。
 - 靜態資產改放 /public，由 Wrangler assets.directory 自動部署。
-- 模板採 import quote.html?raw 載入，無需再 fetch。
-- 專案配置改用 wrangler.toml（Wrangler 4  以上）。
 
 ⸻
 
