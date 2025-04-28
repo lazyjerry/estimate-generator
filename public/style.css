@@ -1,0 +1,70 @@
+body {
+	font-family: "Noto Sans TC", sans-serif;
+	background-color: #f8fafc;
+}
+
+.delete-cell {
+	width: 50px;
+	text-align: center;
+}
+
+#importJsonFile {
+	display: none;
+}
+
+.gradient-bg {
+	background: linear-gradient(135deg, #6b46c1 0%, #805ad5 100%);
+}
+
+.shadow-soft {
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.hover-scale {
+	transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.floating-btn {
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+	transition: all 0.3s ease;
+}
+
+.floating-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.form-footer {
+	position: relative;
+	padding-bottom: 80px;
+}
+
+.action-buttons-container {
+	position: fixed;
+	bottom: 20px;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	gap: 15px;
+	z-index: 100;
+}
+
+.action-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 12px 20px;
+	border-radius: 8px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	width: 160px;
+}
+
+.action-button svg {
+	margin-right: 8px;
+}
