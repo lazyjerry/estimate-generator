@@ -3,125 +3,199 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>報價單產生器</title>
-		<!-- Bootstrap CSS CDN -->
+		<!-- <script src="https://cdn.tailwindcss.com"></script> -->
 		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap"
 			rel="stylesheet"
 		/>
-		<link href="/main.css" rel="stylesheet" />
+
+		<link href="/tailwindcss.css" rel="stylesheet" />
+		<link href="/style.css" rel="stylesheet" />
 	</head>
 
-	<body>
-		<div class="container my-4">
-			<h1 class="text-center mb-4">報價單產生器</h1>
-			<!-- method="POST" 只是示例，實際動作需搭配後端設定 -->
-			<form id="quoteForm" method="POST" target="_blank" action="/quote">
-				<!-- 隱藏欄位，用來存放整份 JSON 資料 -->
+	<body class="bg-gray-50">
+		<div class="container mx-auto my-8 px-4 max-w-6xl">
+			<div
+				class="gradient-bg text-white rounded-xl p-6 mb-8 shadow-soft hover-scale"
+			>
+				<h1 class="text-3xl font-bold text-center mb-2">報價單產生器</h1>
+				<p class="text-center text-indigo-100">
+					快速建立專業的報價單，提升您的業務效率
+				</p>
+			</div>
+
+			<form
+				id="quoteForm"
+				method="POST"
+				target="_blank"
+				action="/quote"
+				class="bg-white rounded-xl shadow-soft p-6 hover-scale form-footer"
+			>
 				<input type="hidden" name="data" id="dataField" />
-				<div class="row">
-					<!-- 左側：基本資料 -->
-					<div class="col-md-6">
-						<div class="mb-3">
-							<label for="logoUrl" class="form-label"
-								>Logo URL（請注意 CORS 問題）</label
-							>
-							<input
-								type="text"
-								class="form-control"
-								id="logoUrl"
-								name="logoUrl"
-								placeholder="例如：https://example.com/logo.png"
-								value=""
-							/>
+
+				<div class="flex flex-col lg:flex-row gap-8">
+					<!-- Left Column: Basic Information -->
+					<div class="w-full lg:w-1/2 space-y-6">
+						<div class="bg-indigo-50 rounded-lg p-4">
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">
+								基本資訊
+							</h2>
+
+							<div class="space-y-4">
+								<div>
+									<label
+										for="logoUrl"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										Logo URL
+										<span class="text-xs text-gray-500"
+											>（請注意 CORS 問題）</span
+										>
+									</label>
+									<input
+										type="text"
+										id="logoUrl"
+										name="logoUrl"
+										placeholder="例如：https://example.com/logo.png"
+										value=""
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+
+								<div>
+									<label
+										for="providerName"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										乙方 (報價單位)
+									</label>
+									<input
+										type="text"
+										id="providerName"
+										name="providerName"
+										placeholder="例如：乙方示例公司"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+
+								<div>
+									<label
+										for="providerContact"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										乙方聯絡資訊
+									</label>
+									<textarea
+										id="providerContact"
+										name="providerContact"
+										rows="3"
+										placeholder="請輸入資訊，例如：&#10;地址：台中市西區示例路 10 號&#10;電話：04-1234567"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									></textarea>
+								</div>
+
+								<div>
+									<label
+										for="customerName"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										甲方 (客戶)
+									</label>
+									<input
+										type="text"
+										id="customerName"
+										name="customerName"
+										placeholder="例如：甲方示例企業"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+
+								<div>
+									<label
+										for="customerContact"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										甲方聯絡資訊
+									</label>
+									<textarea
+										id="customerContact"
+										name="customerContact"
+										rows="3"
+										placeholder="請輸入資訊，例如：&#10;地址：高雄市前鎮區示例路 20 號&#10;電話：07-7654321"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									></textarea>
+								</div>
+							</div>
 						</div>
-						<div class="mb-3">
-							<label for="providerName" class="form-label"
-								>乙方 (報價單位)</label
-							>
-							<input
-								type="text"
-								class="form-control"
-								id="providerName"
-								name="providerName"
-								placeholder="例如：乙方示例公司"
-								required
-							/>
+
+						<div class="bg-indigo-50 rounded-lg p-4">
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">
+								報價資訊
+							</h2>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label
+										for="quoteNumber"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										報價單編號
+									</label>
+									<input
+										type="text"
+										id="quoteNumber"
+										name="quoteNumber"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+
+								<div>
+									<label
+										for="dateInput"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										日期
+									</label>
+									<input
+										type="date"
+										id="dateInput"
+										name="date"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+
+								<div>
+									<label
+										for="deadlineInput"
+										class="block text-sm font-medium text-gray-700 mb-1"
+									>
+										截止日期
+									</label>
+									<input
+										type="date"
+										id="deadlineInput"
+										name="deadline"
+										required
+										class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+									/>
+								</div>
+							</div>
 						</div>
-						<div class="mb-3">
-							<label for="providerContact" class="form-label"
-								>乙方聯絡資訊</label
-							>
+
+						<div class="bg-indigo-50 rounded-lg p-4">
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">備註</h2>
 							<textarea
-								class="form-control"
-								id="providerContact"
-								name="providerContact"
-								rows="3"
-								placeholder="請輸入資訊，例如：&#10;地址：台中市西區示例路 10 號&#10;電話：04-1234567"
-								required
-							></textarea>
-						</div>
-						<div class="mb-3">
-							<label for="customerName" class="form-label">甲方 (客戶)</label>
-							<input
-								type="text"
-								class="form-control"
-								id="customerName"
-								name="customerName"
-								placeholder="例如：甲方示例企業"
-								required
-							/>
-						</div>
-						<div class="mb-3">
-							<label for="customerContact" class="form-label"
-								>甲方聯絡資訊</label
-							>
-							<textarea
-								class="form-control"
-								id="customerContact"
-								name="customerContact"
-								rows="3"
-								placeholder="請輸入資訊，例如：&#10;地址：高雄市前鎮區示例路 20 號&#10;電話：07-7654321"
-								required
-							></textarea>
-						</div>
-						<div class="mb-3">
-							<label for="quoteNumber" class="form-label">報價單編號</label>
-							<input
-								type="text"
-								class="form-control"
-								id="quoteNumber"
-								name="quoteNumber"
-								required
-							/>
-						</div>
-						<div class="mb-3">
-							<label for="dateInput" class="form-label">日期</label>
-							<input
-								type="date"
-								class="form-control"
-								id="dateInput"
-								name="date"
-								required
-							/>
-						</div>
-						<div class="mb-3">
-							<label for="deadlineInput" class="form-label">截止日期</label>
-							<input
-								type="date"
-								class="form-control"
-								id="deadlineInput"
-								name="deadline"
-								required
-							/>
-						</div>
-						<div class="mb-3">
-							<label for="remarks" class="form-label">備註</label>
-							<textarea
-								class="form-control"
 								id="remarks"
 								name="remarks"
-								rows="12"
+								rows="8"
 								placeholder="例如：此報價僅供參考，請儘快回覆"
+								class="w-full px-4 py-3 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
 							>
 1.該份報價附屬於事先簽署的合作合約之中，若無則僅供確認記錄留存，請勿蓋章、回簽。
 2.單價不含稅與支付平台手續費用。發票稅為總價 5%，其餘手續費用另記。
@@ -132,150 +206,236 @@
 							>
 						</div>
 					</div>
-					<!-- 右側：品項明細與金額 -->
-					<div class="col-md-6">
-						<h2>品項細節</h2>
-						<table class="table table-bordered" id="itemsTable">
-							<tbody>
-								<!-- 此處預設不放任何<tr>，直接靠JS動態插入 -->
-							</tbody>
-						</table>
-						<!-- 新增品項 + 刷新 按鈕組（刷新按鈕置右，正方形） -->
-						<div class="d-flex mb-3">
-							<button type="button" id="addItemButton" class="btn btn-primary">
-								＋ 新增品項
-							</button>
-							<!-- ms-auto 表示往左推，讓按鈕跑到最右邊 -->
-							<button
-								type="button"
-								id="refreshButton"
-								class="btn btn-secondary ms-auto d-flex align-items-center justify-content-center"
-								style="width: 40px; height: 40px"
-								title="刷新"
-							>
-								↺
-							</button>
+
+					<!-- Right Column: Items and Totals -->
+					<div class="w-full lg:w-1/2 space-y-6">
+						<div
+							class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm"
+						>
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">
+								品項細節
+							</h2>
+
+							<div class="overflow-x-auto">
+								<table
+									id="itemsTable"
+									class="min-w-full divide-y divide-gray-200"
+								>
+									<tbody class="bg-white divide-y divide-gray-200">
+										<!-- Rows will be added dynamically -->
+									</tbody>
+								</table>
+							</div>
+
+							<div class="flex justify-between items-center mt-4">
+								<button
+									type="button"
+									id="addItemButton"
+									class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+								>
+									<span class="font-medium">＋ 新增品項</span>
+								</button>
+
+								<button
+									type="button"
+									id="refreshButton"
+									title="刷新"
+									class="w-10 h-10 flex items-center justify-center bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-5 w-5"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</button>
+							</div>
 						</div>
-						<div class="mb-3 mt-3">
-							<label for="taxPercent" class="form-label">稅金百分比 (%)</label>
-							<input
-								type="number"
-								class="form-control"
-								id="taxPercent"
-								name="taxPercent"
-								step="1"
-								min="0"
-								value="0"
-								required
-							/>
+
+						<div
+							class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm"
+						>
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">
+								稅金設定
+							</h2>
+
+							<div>
+								<label
+									for="taxPercent"
+									class="block text-sm font-medium text-gray-700 mb-1"
+								>
+									稅金百分比 (%)
+								</label>
+								<input
+									type="number"
+									id="taxPercent"
+									name="taxPercent"
+									step="1"
+									min="0"
+									value="0"
+									required
+									class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+								/>
+							</div>
 						</div>
-						<!-- Totals 以兩行表格呈現 -->
-						<table class="table table-bordered text-center mt-3">
-							<tr>
-								<th>小計</th>
-								<th>稅金</th>
-								<th>總計</th>
-							</tr>
-							<tr>
-								<td id="subtotalDisplay">0</td>
-								<td id="taxDisplay">0</td>
-								<td id="totalDisplay">0</td>
-							</tr>
-						</table>
+
+						<div
+							class="bg-white rounded-lg p-4 border border-gray-200 shadow-sm"
+						>
+							<h2 class="text-xl font-semibold text-indigo-800 mb-4">
+								金額總計
+							</h2>
+
+							<table class="min-w-full divide-y divide-gray-200">
+								<thead class="bg-gray-50">
+									<tr>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+										>
+											小計
+										</th>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+										>
+											稅金
+										</th>
+										<th
+											scope="col"
+											class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+										>
+											總計
+										</th>
+									</tr>
+								</thead>
+								<tbody class="bg-white divide-y divide-gray-200">
+									<tr>
+										<td
+											id="subtotalDisplay"
+											class="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900"
+										>
+											0
+										</td>
+										<td
+											id="taxDisplay"
+											class="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900"
+										>
+											0
+										</td>
+										<td
+											id="totalDisplay"
+											class="px-4 py-3 whitespace-nowrap text-lg font-semibold text-indigo-600"
+										>
+											0
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
-				<!-- 浮動的圓形提交按鈕 -->
-				<button
-					type="submit"
-					id="submitButton"
-					class="btn btn-success rounded-circle position-fixed"
-				>
-					&#10003;
-				</button>
-				<!-- 小型圓形：匯出JSON、匯入JSON -->
-				<button
-					type="button"
-					class="fab-sub"
-					id="exportJsonBtn"
-					onclick="exportFormJSON()"
-					title="匯出 JSON"
-				>
-					JSON匯出
-				</button>
-				<button
-					type="button"
-					class="fab-sub"
-					id="importJsonBtn"
-					onclick="document.getElementById('importJsonFile').click()"
-					title="匯入 JSON"
-				>
-					JSON匯入
-				</button>
-				<!-- 隱藏檔案欄位，供匯入 JSON -->
+
 				<input
 					type="file"
 					id="importJsonFile"
-					style="display: none"
 					accept=".json"
 					onchange="importFormJSON(event)"
 				/>
 			</form>
 		</div>
-		<!-- 隱藏的品項模板：數量、單價、刪除 都在同一行 -->
+
+		<!-- Action buttons container (fixed at bottom) -->
+		<div class="action-buttons-container">
+			<button
+				type="button"
+				id="exportJsonBtn"
+				onclick="exportFormJSON()"
+				class="action-button bg-indigo-500 text-white floating-btn"
+			>
+				匯出 JSON
+			</button>
+
+			<button
+				type="button"
+				id="importJsonBtn"
+				onclick="document.getElementById('importJsonFile').click()"
+				class="action-button bg-indigo-500 text-white floating-btn"
+			>
+				匯入 JSON
+			</button>
+
+			<button
+				type="submit"
+				id="submitButton"
+				form="quoteForm"
+				class="action-button bg-green-500 text-white floating-btn"
+			>
+				提交報價單
+			</button>
+		</div>
+
+		<!-- Hidden item template -->
 		<script type="text/template" id="itemTemplate">
 			<tr class="descRow">
-			  <td colspan="3">
-			    <textarea
-			      class="form-control"
-			      name="itemDescription"
-			      placeholder="品項描述"
-			      rows="3"
-			      required
-			    ></textarea>
-			  </td>
+			    <td colspan="3" class="px-4 py-3">
+			        <textarea
+			            class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+			            name="itemDescription"
+			            placeholder="品項描述"
+			            rows="3"
+			            required
+			        ></textarea>
+			    </td>
 			</tr>
 			<tr class="numberRow">
-			  <td>
-			    <label class="form-label">數量</label>
-			    <input
-			      type="number"
-			      class="form-control"
-			      name="itemQuantity"
-			      step="1"
-			      min="1"
-			      value="1"
-			      required
-			    />
-			  </td>
-			  <td>
-			    <label class="form-label">單價</label>
-			    <input
-			      type="number"
-			      class="form-control"
-			      name="itemUnitPrice"
-			      step="1"
-			      min="0"
-			      value="0"
-			      required
-			    />
-			  </td>
-			  <td class="delete-cell align-middle">
-			    <button
-			      type="button"
-			      class="btn btn-danger btn-sm"
-			      onclick="removeRow(this)"
-			      title="刪除"
-			    >
-			      X
-			    </button>
-			  </td>
+			    <td class="px-4 py-3">
+			        <label class="block text-sm font-medium text-gray-700 mb-1">數量</label>
+			        <input
+			            type="number"
+			            class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+			            name="itemQuantity"
+			            step="1"
+			            min="1"
+			            value="1"
+			            required
+			        />
+			    </td>
+			    <td class="px-4 py-3">
+			        <label class="block text-sm font-medium text-gray-700 mb-1">單價</label>
+			        <input
+			            type="number"
+			            class="w-full px-4 py-2 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+			            name="itemUnitPrice"
+			            step="1"
+			            min="0"
+			            value="0"
+			            required
+			        />
+			    </td>
+			    <td class="delete-cell align-middle px-4 py-3">
+			        <button
+			            type="button"
+			            onclick="removeRow(this)"
+			            title="刪除"
+			            class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+			        >
+			            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+			                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+			            </svg>
+			        </button>
+			    </td>
 			</tr>
 		</script>
-		<!-- jQuery CDN -->
+
+		<!-- Scripts -->
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<!-- Bootstrap JS CDN -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-		<!-- FileSaver.js 用於下載 JSON -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 		<script src="/func.js"></script>
 		<script src="/main.js"></script>
