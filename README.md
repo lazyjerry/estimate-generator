@@ -37,7 +37,7 @@ LocalStorage 快取 關閉頁面資料不遺失。
 ⸻
 
 專案結構
-
+```
 estimate-generator/
 ├─ public/ # 靜態頁面與資產
 │ ├─ index.html # 填寫表單
@@ -49,7 +49,7 @@ estimate-generator/
 │ └─ quote.html # 報價單模板（以 ?raw 匯入）
 ├─ wrangler.toml
 └─ package.json
-
+```
 ⸻
 
 快速開始
